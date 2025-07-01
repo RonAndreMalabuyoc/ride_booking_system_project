@@ -126,11 +126,30 @@ def register_driver():
     print("Driver registered successfully!")
     return driver
 
+def rider_experience(rider):
+    print("You're riding something")
+
+#location access
+    location_access = input("Allow location access (Y/n): ")
+    if location_access != "Y":
+        print("Location access is required to proceed")
+    elif location_access == "Y":
+        print("Enter your current location")
+
+#Vehicle Selection
+    print("Please select which Vehicle you would like to book")
+    print("Press 1 for Motorcycle, Press 2 for Car, Press 3 for Van")
+    vehicle_choice = input("Enter your option here: ")
+    vehicle_types = {"1": "Motorcycle", "2": "Car", "3": "Van" }
+    vehicle_selected = vehicle_types.get(vehicle_choice, None)
+
 if __name__ == "__main__":
     mode = show_terms_of_service_and_mode_select()
     if mode == "Driver":
         driver = register_driver()
         # Continue with driver dashboard or booking logic
     elif mode == "Rider":
-        rider = register_rider()
+        rider = rider_experience("rider")
         # Continue with rider booking logic
+
+
