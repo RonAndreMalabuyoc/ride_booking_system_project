@@ -143,10 +143,12 @@ Fast as Duck Quack Quack Quack"""
         self.paypal_var = ctk.BooleanVar()
         self.cod_var = ctk.BooleanVar(value=True)
 
-        ctk.CTkCheckBox(form_frame, text="GCash", variable=self.gcash_var).grid(row=9, column=0, sticky="w", padx=10)
-        ctk.CTkCheckBox(form_frame, text="PayMaya", variable=self.paymaya_var).grid(row=10, column=0, sticky="w", padx=10)
-        ctk.CTkCheckBox(form_frame, text="PayPal", variable=self.paypal_var).grid(row=11, column=0, sticky="w", padx=10)
-        ctk.CTkCheckBox(form_frame, text="Cash", variable=self.cod_var).grid(row=12, column=0, sticky="w", padx=10, pady=(0, 10))
+        self.payment_method = ctk.StringVar(value="Cash")
+
+        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=9, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=10, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=11, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=12, column=0, sticky="w", padx=10, pady=(0, 10))
 
         button_frame = ctk.CTkFrame(scrollable_frame)
         button_frame.pack(fill="x", padx=10, pady=10)
