@@ -18,7 +18,7 @@ class User:
         self.last_name = last_name
         self.gender = gender
         self.address = address
-        self.contact_info = contact_info
+        self.contact_info = contact_info                                                                                
         self.age = age
 
 class Rider(User):
