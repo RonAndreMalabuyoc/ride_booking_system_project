@@ -15,6 +15,11 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
+IMAGE_PATH = os.path.join(os.path.dirname(__file__), "Banana_duck_logo_transparent.png")
+DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
+USERS_PATH = os.path.join(os.path.dirname(__file__), "users.csv")
+PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
+DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
 
 # Base Classes
 class User:
@@ -70,7 +75,7 @@ class DuckDashApp(ctk.CTk):
         pygame.mixer.music.play()  # loop to keep playing during fade
 
         self.clear_window()
-        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\Banana_duck_logo_transparent.png")
+        image = Image.open(IMAGE_PATH)
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
