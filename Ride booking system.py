@@ -232,21 +232,32 @@ def driver_dashboard(driver):
             print("Invalid option. Please try again.")
 
 def rider_experience(rider):
-    print("You're riding something")
-
-#location access
     location_access = input("Allow location access (Y/n): ")
     if location_access != "Y":
-        print("Location access is required to proceed")
-    elif location_access == "Y":
-        print("Enter your current location")
+        print("Location access is required to proceed.")
+        return
+    else:
+        print("Location access granted. Enter your current location:")
 
-    #Vehicle Selection
-    print("Please select which Vehicle you would like to book")
+    # Vehicle Selection
+    print("Please select which Vehicle you would like to book:")
     print("Press 1 for Motorcycle, Press 2 for Car, Press 3 for Van")
     vehicle_choice = input("Enter your option here: ")
-    vehicle_types = {"1": "Motorcycle", "2": "Car", "3": "Van" }
+    vehicle_types = {"1": "Motorcycle", "2": "Car", "3": "Van"}
     vehicle_selected = vehicle_types.get(vehicle_choice, None)
+
+    if vehicle_selected:
+        print(f"Searching for a {vehicle_selected} nearby...")
+        print(f"Finding a {vehicle_selected} near your location... Please wait.")
+        input(f"A {vehicle_selected} has arrived. Press Enter to confirm ride arrival.")
+
+        print("Please rate your ride experience:")
+        rating = input("Rate from 1 to 5 stars: ")
+        while rating not in ["1", "2", "3", "4", "5"]:
+            print("Invalid input. Please enter a rating between 1 and 5.")
+            rating = input("Rate from 1 to 5 stars: ")
+
+        print(f"Thank you for your feedback! You rated your ride {rating} stars.")
 
 if __name__ == "__main__":
     mode = show_terms_of_service_and_mode_select()
@@ -265,5 +276,4 @@ if __name__ == "__main__":
             driver_dashboard(driver)
     elif mode == "Rider":
         rider = register_rider()
-        # Continue with rider booking logic
-
+        rider_experience(rider)
