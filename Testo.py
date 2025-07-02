@@ -61,7 +61,7 @@ class DuckDashApp(ctk.CTk):
 
     def show_logo_screen(self):
         self.clear_window()
-        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\33a76bf9-7215-4778-a1e4-ad40d74a0db0.png")
+        image = Image.open(r"Banana_duck_logo_transparent.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 

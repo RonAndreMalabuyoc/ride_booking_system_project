@@ -64,8 +64,13 @@ class DuckDashApp(ctk.CTk):
             widget.destroy()
 
     def show_logo_screen(self):
+        import pygame
+        pygame.mixer.init()
+        pygame.mixer.music.load("Duck_app_Intro.wav")
+        pygame.mixer.music.play()  # loop to keep playing during fade
+
         self.clear_window()
-        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\33a76bf9-7215-4778-a1e4-ad40d74a0db0.png")
+        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\Banana_duck_logo_transparent.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
@@ -76,32 +81,35 @@ class DuckDashApp(ctk.CTk):
         title.pack()
 
         self.attributes("-alpha", 0.0)
-        self.fade_in(0.0, self.show_login_screen)
+        self.fade_in(0.0, lambda: (pygame.mixer.music, self.show_login_screen()))
 
     def fade_in(self, alpha, callback=None):
+        import pygame
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load("Duck_app_Intro.wav")
+            pygame.mixer.music.play()
         alpha = round(alpha + 0.05, 2)
         if alpha <= 1.0:
             self.attributes("-alpha", alpha)
             self.after(50, lambda: self.fade_in(alpha, callback))
         else:
             self.after(800, callback)
-    
 
     def show_login_screen(self):
         self.clear_window()
 
-        tagline_text ="""Lookin for a Ride?
+        tagline_text = """Lookin for a Ride?
 Book a Ride at DUCK DASH!
 
-
 Fast as Duck, Quack! Quack! Quack!"""
-
-        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 18, "bold"), text_color=TEXT_COLOR)
-        tagline.pack(padx=10, pady=35)
+        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
+        tagline.pack(pady=20)
 
         ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
-        username_label = ctk.CTkLabel(self, text="Username", text_color=TEXT_COLOR)
+        username_label = ctk.CTkLabel(self, text="Username - Contact #", text_color=TEXT_COLOR)
         username_label.pack()
         self.username_entry = ctk.CTkEntry(self, width=200)
         self.username_entry.pack(pady=5)
@@ -129,8 +137,21 @@ Fast as Duck, Quack! Quack! Quack!"""
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
 
     def start_main_menu(self):
+        """Called right after successful authentication."""
         self.attributes("-alpha", 1.0)
-        self.create_home_screen()
+        self.show_dashboard()
+
+    #DASHBOARDDD
+    def show_dashboard(self):
+        """A blank page you can customise later."""
+        self.clear_window()
+
+        ctk.CTkLabel(
+            self,
+            text="Dashboard",
+            font=("Courier", 28, "bold"),
+            text_color=TEXT_COLOR
+        ).pack(pady=40)
 
     def create_home_screen(self):
         self.clear_window()
@@ -226,6 +247,10 @@ Fast as Duck, Quack! Quack! Quack!"""
             writer.writerow([passenger.first_name, passenger.last_name, passenger.gender, passenger.address, passenger.contact_info,
                              passenger.gcash_account, passenger.paymaya_account, passenger.paypal_account, passenger.cod_enabled])
 
+        with open("users.csv", mode='a', newline='') as users_file:
+            users_writer = csv.writer(users_file)
+            users_writer.writerow([data_passenger["Contact Number"], data_passenger["Password"]])
+
         messagebox.showinfo("Success", "Passenger Registered Successfully!")
         self.create_home_screen()
 
@@ -234,8 +259,6 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.driver_data = {}
         fields = ["First Name", "Last Name", "Gender", "Age", "Address", "Contact Number",
                   "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications", "Password"]
-        fields = ["First Name", "Last Name", "Gender", "Age", "Contact Number",
-                  "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications"]
 
         scrollable_frame2 = ctk.CTkScrollableFrame(self, width=500, height=600)
         scrollable_frame2.pack(fill="both", expand=True, padx=10, pady=10)
@@ -270,6 +293,10 @@ Fast as Duck, Quack! Quack! Quack!"""
         contact_label.grid(row=12, column=0, columnspan=2, sticky="w", padx=5)
         self.driver_data["Password"] = ctk.CTkEntry(form_frame, width=320)
         self.driver_data["Password"].grid(row=15, column=0, columnspan=2, padx=5, pady=5)
+        self.driver_data["Password"] = create_entry("Password *", 11, 0)
+
+        button_frame = ctk.CTkFrame(scrollable_frame2)
+        button_frame.pack(fill="x", padx=10, pady=10)
 
         button_frame = ctk.CTkFrame(scrollable_frame2)
         button_frame.pack(fill="x", padx=12, pady=12)
@@ -301,6 +328,10 @@ Fast as Duck, Quack! Quack! Quack!"""
             writer.writerow([driver.first_name, driver.last_name, driver.gender, driver.address, driver.contact_info,
                              driver.vehicle.vehicle_type, driver.vehicle.model, driver.vehicle.color, driver.vehicle.plate_number,
                              driver.qualifications, driver.join_date])
+
+        with open("users.csv", mode='a', newline='') as users_file:
+            users_writer = csv.writer(users_file)
+            users_writer.writerow([data_driver["Contact Number"], data_driver["Password"]])
 
         messagebox.showinfo("Success", "Driver registered successfully!")
         self.create_home_screen()
