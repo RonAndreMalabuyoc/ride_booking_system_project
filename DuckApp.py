@@ -60,6 +60,11 @@ class DuckDashApp(ctk.CTk):
             widget.destroy()
 
     def show_logo_screen(self):
+        import pygame
+        pygame.mixer.init()
+        pygame.mixer.music.load("Duck_app_Intro.wav")
+        pygame.mixer.music.play()  # loop to keep playing during fade
+
         self.clear_window()
         image = Image.open(r"C:\Users\maria\OneDrive\Documents\Desktop\ride_booking_system_project\Banana_duck_logo_transparent.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
@@ -72,30 +77,31 @@ class DuckDashApp(ctk.CTk):
         title.pack()
 
         self.attributes("-alpha", 0.0)
-        self.fade_in(0.0, self.show_login_screen)
+        self.fade_in(0.0, lambda: (pygame.mixer.music, self.show_login_screen()))
 
     def fade_in(self, alpha, callback=None):
+        import pygame
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load("Duck_app_Intro.wav")
+            pygame.mixer.music.play()
         alpha = round(alpha + 0.05, 2)
         if alpha <= 1.0:
             self.attributes("-alpha", alpha)
             self.after(50, lambda: self.fade_in(alpha, callback))
         else:
             self.after(800, callback)
-<<<<<<< HEAD
-    
-=======
 
     def show_login_screen(self):
         self.clear_window()
 
-        tagline_text ="""Lookin for a Ride?
+        tagline_text = """Lookin for a Ride?
 Book a Ride at DUCK DASH!
 
-
 Fast as Duck, Quack! Quack! Quack!"""
-
-        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 18, "bold"), text_color=TEXT_COLOR)
-        tagline.pack(padx=10, pady=35)
+        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
+        tagline.pack(pady=20)
 
         ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
@@ -126,7 +132,6 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
 
->>>>>>> 1e9f8fb4dda938d832f1eee617eb0e5eca2102fa
     def start_main_menu(self):
         self.attributes("-alpha", 1.0)
         self.create_home_screen()
@@ -140,6 +145,8 @@ Fast as Duck, Quack! Quack! Quack!"""
         ctk.CTkButton(self, text="      Register as Driver      ", font=("Arial", 18), command=self.driver_registration).pack(pady=(20,10))
 
         ctk.CTkButton(self, text="Cancel Registration", command=self.show_login_screen).pack(pady=(20, 10))
+
+        ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
 
     def passenger_registration(self):
         self.clear_window()
@@ -174,8 +181,13 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.passenger_data["Contact Number"] = ctk.CTkEntry(form_frame, width=320)
         self.passenger_data["Contact Number"].grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
+        password_label = ctk.CTkLabel(form_frame, text="Enter a Password *", text_color=TEXT_COLOR)
+        password_label.grid(row=8, column=0, columnspan=2, sticky="w", padx=5)
+        self.passenger_data["Password"] = ctk.CTkEntry(form_frame, width=320)
+        self.passenger_data["Password"].grid(row=9, column=0, columnspan=2, padx=5, pady=5)
+
         payment_label = ctk.CTkLabel(form_frame, text="Payment Methods *", text_color=TEXT_COLOR)
-        payment_label.grid(row=8, column=0, columnspan=2, sticky="w", padx=5)
+        payment_label.grid(row=10, column=0, columnspan=2, sticky="w", padx=5)
 
         self.gcash_var = ctk.BooleanVar()
         self.paymaya_var = ctk.BooleanVar()
@@ -184,10 +196,10 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         self.payment_method = ctk.StringVar(value="Cash")
 
-        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=9, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=10, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=11, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=12, column=0, sticky="w", padx=10, pady=(0, 10))
+        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=14, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=16, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=18, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=20, column=0, sticky="w", padx=10, pady=(0, 10))
 
         button_frame = ctk.CTkFrame(scrollable_frame)
         button_frame.pack(fill="x", padx=10, pady=10)
@@ -226,6 +238,8 @@ Fast as Duck, Quack! Quack! Quack!"""
     def driver_registration(self):
         self.clear_window()
         self.driver_data = {}
+        fields = ["First Name", "Last Name", "Gender", "Age", "Address", "Contact Number",
+                  "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications", "Password"]
         fields = ["First Name", "Last Name", "Gender", "Age", "Contact Number",
                   "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications"]
 
