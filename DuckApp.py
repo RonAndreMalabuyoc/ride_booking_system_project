@@ -136,8 +136,6 @@ Fast as Duck, Quack! Quack! Quack!"""
         ctk.CTkButton(self, text="   Register as Passenger   ",font=("Arial", 18), command=self.passenger_registration).pack(pady=(20,10))
         ctk.CTkButton(self, text="      Register as Driver      ", font=("Arial", 18), command=self.driver_registration).pack(pady=(20,10))
 
-        ctk.CTkButton(self, text="Cancel Registration", command=self.show_login_screen).pack(pady=(20, 10))
-
         ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
 
     def passenger_registration(self):
@@ -264,10 +262,15 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.driver_data["Vehicle Color"] = create_entry("Vehicle Color *", 9, 0)
         self.driver_data["Plate Number"] = create_entry("Plate Number *", 9, 1 )
 
-        button_frame = ctk.CTkFrame(scrollable_frame2)
-        button_frame.pack(fill="x", padx=10, pady=10)
+        contact_label = ctk.CTkLabel(form_frame, text="Password *", text_color=TEXT_COLOR)
+        contact_label.grid(row=12, column=0, columnspan=2, sticky="w", padx=5)
+        self.driver_data["Password"] = ctk.CTkEntry(form_frame, width=320)
+        self.driver_data["Password"].grid(row=15, column=0, columnspan=2, padx=5, pady=5)
 
-        ctk.CTkButton(button_frame, text="Submit", command=self.save_driver).pack(pady=10)
+        button_frame = ctk.CTkFrame(scrollable_frame2)
+        button_frame.pack(fill="x", padx=12, pady=12)
+
+        ctk.CTkButton(button_frame, text="Submit", command=self.save_driver).pack(pady=15)
         ctk.CTkButton(button_frame, text="Back", command=self.create_home_screen).pack()
 
     def save_driver(self):
