@@ -67,9 +67,9 @@ def show_map_and_get_distance(pickup, dropoff):
 
 def total_fare(vehicle, distance_km):
     fare_per_km = {
-        "Car": 85.00,
-        "Van": 100.00,
-        "Motorcycle": 50.00
+        "Car": 45.00,
+        "Van": 60.00,
+        "Motorcycle": 30.00
     }
     return fare_per_km[vehicle] * distance_km
 
