@@ -18,7 +18,7 @@ class User:
         self.last_name = last_name
         self.gender = gender
         self.address = address
-        self.contact_info = contact_info
+        self.contact_info = contact_info                                                                                
         self.age = age
 
 class Rider(User):
@@ -60,7 +60,7 @@ class DuckDashApp(ctk.CTk):
 
     def show_logo_screen(self):
         self.clear_window()
-        image = Image.open(r"C:\Users\maria\OneDrive\Documents\Desktop\ride_booking_system_project\Banana_duck_logo_transparent.png")
+        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\33a76bf9-7215-4778-a1e4-ad40d74a0db0.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
@@ -97,7 +97,7 @@ class DuckDashApp(ctk.CTk):
 Book a Ride at DUCK DASH!
 
 
-Fast as Duck Quack Quack Quack"""
+Fast as Duck, Quack! Quack! Quack!"""
 
         tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 18, "bold"), text_color=TEXT_COLOR)
         tagline.pack(padx=10, pady=95)
