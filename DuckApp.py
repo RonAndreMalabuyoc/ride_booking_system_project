@@ -80,7 +80,7 @@ class DuckDashApp(ctk.CTk):
             self.after(50, lambda: self.fade_in(alpha, callback))
         else:
             self.after(800, callback)
-
+    
     def start_main_menu(self):
         self.attributes("-alpha", 1.0)
         self.create_home_screen()
