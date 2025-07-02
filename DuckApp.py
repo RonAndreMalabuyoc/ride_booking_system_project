@@ -81,6 +81,9 @@ class DuckDashApp(ctk.CTk):
             self.after(50, lambda: self.fade_in(alpha, callback))
         else:
             self.after(800, callback)
+<<<<<<< HEAD
+    
+=======
 
     def show_login_screen(self):
         self.clear_window()
@@ -123,6 +126,7 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
 
+>>>>>>> 1e9f8fb4dda938d832f1eee617eb0e5eca2102fa
     def start_main_menu(self):
         self.attributes("-alpha", 1.0)
         self.create_home_screen()
