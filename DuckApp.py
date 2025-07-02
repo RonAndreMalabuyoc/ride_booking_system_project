@@ -61,7 +61,7 @@ class DuckDashApp(ctk.CTk):
 
     def show_logo_screen(self):
         self.clear_window()
-        image = Image.open(r"C:\Users\maria\OneDrive\Documents\Desktop\ride_booking_system_project\Banana_duck_logo_transparent.png")
+        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\33a76bf9-7215-4778-a1e4-ad40d74a0db0.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
@@ -81,9 +81,7 @@ class DuckDashApp(ctk.CTk):
             self.after(50, lambda: self.fade_in(alpha, callback))
         else:
             self.after(800, callback)
-<<<<<<< HEAD
     
-=======
 
     def show_login_screen(self):
         self.clear_window()
@@ -126,7 +124,6 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
 
->>>>>>> 1e9f8fb4dda938d832f1eee617eb0e5eca2102fa
     def start_main_menu(self):
         self.attributes("-alpha", 1.0)
         self.create_home_screen()
@@ -138,6 +135,8 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         ctk.CTkButton(self, text="Register as Passenger", command=self.passenger_registration).pack(pady=10)
         ctk.CTkButton(self, text="Register as Driver", command=self.driver_registration).pack(pady=10)
+
+        ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
 
     def passenger_registration(self):
         self.clear_window()
@@ -172,8 +171,13 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.passenger_data["Contact Number"] = ctk.CTkEntry(form_frame, width=320)
         self.passenger_data["Contact Number"].grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
+        password_label = ctk.CTkLabel(form_frame, text="Enter a Password *", text_color=TEXT_COLOR)
+        password_label.grid(row=8, column=0, columnspan=2, sticky="w", padx=5)
+        self.passenger_data["Password"] = ctk.CTkEntry(form_frame, width=320)
+        self.passenger_data["Password"].grid(row=9, column=0, columnspan=2, padx=5, pady=5)
+
         payment_label = ctk.CTkLabel(form_frame, text="Payment Methods *", text_color=TEXT_COLOR)
-        payment_label.grid(row=8, column=0, columnspan=2, sticky="w", padx=5)
+        payment_label.grid(row=10, column=0, columnspan=2, sticky="w", padx=5)
 
         self.gcash_var = ctk.BooleanVar()
         self.paymaya_var = ctk.BooleanVar()
@@ -182,10 +186,10 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         self.payment_method = ctk.StringVar(value="Cash")
 
-        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=9, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=10, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=11, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=12, column=0, sticky="w", padx=10, pady=(0, 10))
+        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=14, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=16, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=18, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=20, column=0, sticky="w", padx=10, pady=(0, 10))
 
         button_frame = ctk.CTkFrame(scrollable_frame)
         button_frame.pack(fill="x", padx=10, pady=10)
@@ -225,7 +229,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.clear_window()
         self.driver_data = {}
         fields = ["First Name", "Last Name", "Gender", "Age", "Address", "Contact Number",
-                  "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications"]
+                  "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications", "Password"]
 
         scrollable_frame2 = ctk.CTkScrollableFrame(self, width=400, height=500)
         scrollable_frame2.pack(fill="both", expand=True, padx=10, pady=10)
