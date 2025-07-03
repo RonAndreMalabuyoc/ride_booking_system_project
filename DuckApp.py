@@ -6,7 +6,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from datetime import datetime
 import csv
-import os
+from os import *
 from PIL import Image, ImageTk
 
 # Theme & Colors
@@ -15,12 +15,11 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "Banana_duck_logo_transparent.png")
-DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
-USERS_PATH = os.path.join(os.path.dirname(__file__), "users.csv")
-PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
-DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
-BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
+IMAGE_PATH = path.join(path.dirname(__file__), "Banana_duck_logo_transparent.png")
+DUCK_INTRO_PATH = path.join(path.dirname(__file__), "Duck_app_Intro.wav")
+PASSENGERS_PATH = path.join(path.dirname(__file__), "passenger.csv")
+DRIVERS_PATH = path.join(path.dirname(__file__), "drivers.csv")
+BOOK_IMAGE_PATH = path.join(path.dirname(__file__), "book_button.png")
 
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
@@ -68,9 +67,11 @@ class DuckDashApp(ctk.CTk):
         self.configure(fg_color=PRIMARY_COLOR)
         self.after(100, self.show_logo_screen)
 
-    def clear_window(self):
+    def clear_window(self):                         # Reusable Code
         for widget in self.winfo_children():
             widget.destroy()
+            
+# ====== STARTING FLUFF SCREEN ======
 
     def show_logo_screen(self):
         import pygame
@@ -90,7 +91,7 @@ class DuckDashApp(ctk.CTk):
         title.pack()
 
         self.attributes("-alpha", 0.0)
-        self.fade_in(0.0, lambda: (pygame.mixer.music, self.show_login_screen()))
+        self.fade_in(0.0, lambda: (pygame.mixer.music, self.show_start_screen()))
 
     def fade_in(self, alpha, callback=None):
         import pygame
@@ -106,11 +107,13 @@ class DuckDashApp(ctk.CTk):
         else:
             self.after(800, callback)
 
-    def show_login_screen(self):
+# ====== Start Screen ======
+
+    def show_start_screen(self):
         self.clear_window()
         # Ensure window is visible after logout
         self.attributes("-alpha", 1.0)
-        print("[DEBUG] show_login_screen called")
+        print("[DEBUG] show_start_screen called")
 
         tagline_text = """Lookin for a Ride?
 Book a Ride at DUCK DASH!
@@ -119,51 +122,49 @@ Fast as Duck, Quack! Quack! Quack!"""
         tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
         tagline.pack(pady=20)
 
-        ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+        ctk.CTkButton(self, text="Login Type", command=self.create_login_screen).pack(pady=5)
+        ctk.CTkButton(self, text="Register Now!", command=self.create_register_screen).pack(pady=5)
 
-        username_label = ctk.CTkLabel(self, text="Username", text_color=TEXT_COLOR)
-        username_label.pack()
-        self.username_entry = ctk.CTkEntry(self, width=200)
-        self.username_entry.pack(pady=5)
-
-        password_label = ctk.CTkLabel(self, text="Password", text_color=TEXT_COLOR)
-        password_label.pack()
-        self.password_entry = ctk.CTkEntry(self, show="*", width=200)
-        self.password_entry.pack(pady=5)
-
-        ctk.CTkButton(self, text="Login", command=self.verify_login).pack(pady=10)
-        ctk.CTkButton(self, text="Register Now!", command=self.create_home_screen).pack(pady=5)
-
-    def verify_login(self):
+    def verify_login_passenger(self):                     # Login Button Functionality
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if os.path.exists(USERS_PATH):
-            with open(USERS_PATH, mode='r') as file:
+        if path.exists(PASSENGERS_PATH):
+            with open(PASSENGERS_PATH, mode='r') as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    if len(row) >= 2 and row[0] == username and row[1] == password:
-                        self.start_main_menu()
+                    if len(row) >= 6 and row[5] == username and row[6] == password:
+                        self.start_main_menu_passenger()
                         return
 
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
+        
+    def verify_login_driver(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
 
-    def start_main_menu(self):
+        if path.exists(DRIVERS_PATH):
+            with open(DRIVERS_PATH, mode='r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if len(row) >= 9 and row[4] == username and row[9] == password:
+                        self.start_main_menu_passenger()
+                        return
+
+    def start_main_menu_passenger(self):
         """Called right after successful authentication."""
         self.attributes("-alpha", 1.0)
-        self.show_dashboard()
+        self.show_dashboard_passenger()
+        
+    def start_main_menu_driver(self):
+        """Called right after successful authentication."""
+        self.attributes("-alpha", 1.0)
+        self.show_dashboard_driver()
 
-
-
-
-#===================================================================================================================================================================
-
-
-
-
+# ====== PASSENGER DASHBOARD ======
 
     #MAP BOOKING
-    def show_dashboard(self):
+    def show_dashboard_passenger(self):
         self.clear_window()
         ctk.CTkLabel(self, text="Welcome to Duck Dash!", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
@@ -172,7 +173,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         book_ctk_img = ctk.CTkImage(light_image=book_img, dark_image=book_img, size=(30, 30))
 
         ctk.CTkButton(self, text=" Book a Ride", image=book_ctk_img, compound="left", font=("Arial", 18), command=self.show_booking_screen).pack(pady=15)
-        ctk.CTkButton(self, text="Log Out", font=("Arial", 15), command=self.show_login_screen).pack(pady=30)
+        ctk.CTkButton(self, text="Log Out", font=("Arial", 15), command=self.show_start_screen).pack(pady=30)
 
     def show_booking_screen(self):
         self.clear_window()
@@ -200,7 +201,7 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         ctk.CTkButton(self, text="Calculate Fare & Show Map", command=self.process_booking).pack(pady=15)
         ctk.CTkButton(self, text="Confirm Ride", command=self.confirm_ride).pack(pady=10)
-        ctk.CTkButton(self, text="Back to Dashboard", command=self.show_dashboard).pack(pady=10)
+        ctk.CTkButton(self, text="Back to Dashboard", command=self.show_dashboard_passenger).pack(pady=10)
 
     def update_seat_options(self, selected_vehicle):
         seats = [str(seat) for seat in self.available_seats()[selected_vehicle]]
@@ -301,15 +302,25 @@ Fast as Duck, Quack! Quack! Quack!"""
         Thank you for booking with Duck Dash!
         """
         messagebox.showinfo("Ride Confirmed", details.strip())
+        
+# ====== DRIVER DASHBOARD ======
 
+    def show_dashboard_driver():
+        pass
 
-#==================================================================================================================================================================
+# ====== SCREEN AFTER START UP ====== REUSABLE Codes
 
+    def create_login_screen(self):              # Reusable Code
+            self.clear_window()
+            ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
+            ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
+            ctk.CTkButton(self, text="   Login as Passenger   ",font=("Arial", 18), command=self.passenger_login).pack(pady=(20,10))
+            ctk.CTkButton(self, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
 
+            ctk.CTkButton(self, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
 
-
-    def create_home_screen(self):
+    def create_register_screen(self):             # Reusable Code
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
             ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
@@ -317,8 +328,59 @@ Fast as Duck, Quack! Quack! Quack!"""
             ctk.CTkButton(self, text="   Register as Passenger   ",font=("Arial", 18), command=self.passenger_registration).pack(pady=(20,10))
             ctk.CTkButton(self, text="      Register as Driver      ", font=("Arial", 18), command=self.driver_registration).pack(pady=(20,10))
 
-            ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
+            ctk.CTkButton(self, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
+            
+# ====== Login as Passenger ======
 
+    def passenger_login(self):
+        self.clear_window()
+        tagline_text = """Lookin for a Ride?
+Book a Ride at DUCK DASH!
+
+Fast as Duck, Quack! Quack! Quack!"""
+        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
+        tagline.pack(pady=20)
+
+        ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+
+        username_label = ctk.CTkLabel(self, text="Username", text_color=TEXT_COLOR)
+        username_label.pack()
+        self.username_entry = ctk.CTkEntry(self, width=200)
+        self.username_entry.pack(pady=5)
+
+        password_label = ctk.CTkLabel(self, text="Password", text_color=TEXT_COLOR)
+        password_label.pack()
+        self.password_entry = ctk.CTkEntry(self, show="*", width=200)
+        self.password_entry.pack(pady=5)
+        
+        ctk.CTkButton(self, text="Login", command=self.verify_login_passenger).pack(pady=10)
+    
+# ====== Login as Driver ======
+
+    def driver_login(self):
+        self.clear_window()
+        tagline_text = """Lookin for a Ride?
+Book a Ride at DUCK DASH!
+
+Fast as Duck, Quack! Quack! Quack!"""
+        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
+        tagline.pack(pady=20)
+
+        ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+
+        username_label = ctk.CTkLabel(self, text="Username", text_color=TEXT_COLOR)
+        username_label.pack()
+        self.username_entry = ctk.CTkEntry(self, width=200)
+        self.username_entry.pack(pady=5)
+
+        password_label = ctk.CTkLabel(self, text="Password", text_color=TEXT_COLOR)
+        password_label.pack()
+        self.password_entry = ctk.CTkEntry(self, show="*", width=200)
+        self.password_entry.pack(pady=5)
+        
+        ctk.CTkButton(self, text="Login", command=self.verify_login_driver).pack(pady=10)
+
+# ====== Register as Passenger ======
 
     def passenger_registration(self):
         self.clear_window()
@@ -385,7 +447,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         button_frame.pack(fill="x", padx=10, pady=10)
 
         ctk.CTkButton(button_frame, text="Register as Passenger", width=280, height=40, command=self.save_passenger).pack(pady=10)
-        ctk.CTkButton(button_frame, text="Back", command=self.create_home_screen).pack(pady=(0, 10))
+        ctk.CTkButton(button_frame, text="Back", command=self.create_register_screen).pack(pady=(0, 10))
 
     def save_passenger(self):
         data_passenger = {field: entry.get() for field, entry in self.passenger_data.items()}
@@ -414,18 +476,18 @@ Fast as Duck, Quack! Quack! Quack!"""
                       data_passenger["Address"], data_passenger["Contact Number"],
                       data_passenger.get("GCash Account"), data_passenger.get("PayMaya Account"), data_passenger.get("PayPal Account"),
                       self.cod_var.get())
-
-        with open(PASSENGERS_PATH, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([passenger.first_name, passenger.last_name, passenger.gender, passenger.address, passenger.contact_info,
-                             passenger.gcash_account, passenger.paymaya_account, passenger.paypal_account, passenger.cod_enabled])
-
-        with open(USERS_PATH, mode='a', newline='') as users_file:
-            users_writer = csv.writer(users_file)
-            users_writer.writerow([data_passenger["Username"], data_passenger["Password"]])
+        
+        if path.exists(PASSENGERS_PATH):
+            with open(PASSENGERS_PATH, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([passenger.first_name, passenger.last_name, passenger.gender, passenger.address, passenger.contact_info,
+                                data_passenger["Username"], data_passenger["Password"],
+                                passenger.gcash_account, passenger.paymaya_account, passenger.paypal_account, passenger.cod_enabled])
 
         messagebox.showinfo("Success", "Passenger Registered Successfully!")
-        self.create_home_screen()
+        self.create_register_screen()
+
+# ====== Driver Registration ======
 
     def driver_registration(self):
         self.clear_window()
@@ -488,7 +550,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         button_frame.pack(fill="x", padx=10, pady=10)
 
         ctk.CTkButton(button_frame, text="Submit", command=self.save_driver).pack(pady=15)
-        ctk.CTkButton(button_frame, text="Back", command=self.create_home_screen).pack()
+        ctk.CTkButton(button_frame, text="Back", command=self.create_register_screen).pack()
 
     def save_driver(self):
         data_driver = {field: entry.get() for field, entry in self.driver_data.items()}
@@ -528,28 +590,26 @@ Fast as Duck, Quack! Quack! Quack!"""
             vehicle,
         )
 
-        with open(DRIVERS_PATH, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([
-                data_driver["First Name"],
-                data_driver["Last Name"],
-                data_driver["Gender"],
-                data_driver["Age"],
-                data_driver["Username"],
-                data_driver["Vehicle Type"],
-                data_driver["Vehicle Model"],
-                data_driver["Vehicle Color"],
-                data_driver["Plate Number"],
-                data_driver["Password"],
-                data_driver["Contact Number"]
-            ])
+        if path.exists(DRIVERS_PATH):
+            with open(DRIVERS_PATH, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([
+                    data_driver["First Name"],
+                    data_driver["Last Name"],
+                    data_driver["Gender"],
+                    data_driver["Age"],
+                    data_driver["Username"],
+                    data_driver["Vehicle Type"],
+                    data_driver["Vehicle Model"],
+                    data_driver["Vehicle Color"],
+                    data_driver["Plate Number"],
+                    data_driver["Password"],
+                    data_driver["Contact Number"]
+                ])
 
-        with open(USERS_PATH, mode='a', newline='') as users_file:
-            users_writer = csv.writer(users_file)
-            users_writer.writerow([data_driver["Username"], data_driver["Password"]])
 
         messagebox.showinfo("Success", "Driver registered successfully!")
-        self.create_home_screen()
+        self.create_register_screen()
 
 if __name__ == '__main__':
     app = DuckDashApp()
