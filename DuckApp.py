@@ -165,6 +165,15 @@ class DuckDashApp(ctk.CTk):
     def verify_login_passenger(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
+    def verify_login_passenger(self):                     # Login Button Functionality
+        try:
+            username = self.username_entry.get()
+            password = self.password_entry.get()
+            if not username or not password:
+                raise ValueError("Please enter both username and password.")
+        except Exception as e:
+            messagebox.showerror("Input Error", str(e))
+            return
 
         with open(PASSENGERS_PATH, mode='r') as file:
                 reader = csv.reader(file)
@@ -176,8 +185,14 @@ class DuckDashApp(ctk.CTk):
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
         
     def verify_login_driver(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        try:
+            username = self.username_entry.get()
+            password = self.password_entry.get()
+            if not username or not password:
+                raise ValueError("Please enter both username and password.")
+        except Exception as e:
+            messagebox.showerror("Input Error", str(e))
+            return
 
         if os.path.exists(DRIVERS_PATH):
             with open(DRIVERS_PATH, mode='r') as file:
