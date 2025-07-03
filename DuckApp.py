@@ -293,13 +293,13 @@ Fast as Duck, Quack! Quack! Quack!"""
         scrollable_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
         ctk.CTkLabel(scrollable_frame, text="Passenger Registration", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=10)
-        form_frame = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
-        form_frame.pack(padx=10, pady=10, fill="both", expand=True)
+        form_frame1 = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
+        form_frame1.pack(padx=10, pady=10, fill="both", expand=True)
 
         def create_entry(label_text, row, column):
-            label = ctk.CTkLabel(form_frame, text=label_text, text_color=TEXT_COLOR)
+            label = ctk.CTkLabel(form_frame1, text=label_text, text_color=TEXT_COLOR)
             label.grid(row=row, column=column, sticky="w", padx=5)
-            entry = ctk.CTkEntry(form_frame, width=150)
+            entry = ctk.CTkEntry(form_frame1, width=150)
             entry.grid(row=row+1, column=column, padx=5, pady=5)
             return entry
 
@@ -308,23 +308,25 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.passenger_data["Gender"] = create_entry("Gender *", 2, 0)
         self.passenger_data["Age"] = create_entry("Age *", 2, 1)
 
-        address_label = ctk.CTkLabel(form_frame, text="Address *", text_color=TEXT_COLOR)
+        address_label = ctk.CTkLabel(form_frame1, text="Address *", text_color=TEXT_COLOR)
         address_label.grid(row=4, column=0, columnspan=2, sticky="w", padx=5)
-        self.passenger_data["Address"] = ctk.CTkEntry(form_frame, width=320)
+        self.passenger_data["Address"] = ctk.CTkEntry(form_frame1, width=320)
         self.passenger_data["Address"].grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
-        contact_label = ctk.CTkLabel(form_frame, text="Contact Number *", text_color=TEXT_COLOR)
-        contact_label.grid(row=6, column=0, columnspan=2, sticky="w", padx=5)
-        self.passenger_data["Contact Number"] = ctk.CTkEntry(form_frame, width=320)
-        self.passenger_data["Contact Number"].grid(row=7, column=0, columnspan=2, padx=5, pady=5)
+        username_label = ctk.CTkLabel(form_frame1, text="Username *", text_color=TEXT_COLOR)
+        username_label.grid(row=6, column=0, columnspan=2, sticky="w", padx=5)
+        self.passenger_data["Username"] = ctk.CTkEntry(form_frame1, width=320)
+        self.passenger_data["Username"].grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
-        password_label = ctk.CTkLabel(form_frame, text="Enter a Password *", text_color=TEXT_COLOR)
+        password_label = ctk.CTkLabel(form_frame1, text="Enter a Password *", text_color=TEXT_COLOR)
         password_label.grid(row=8, column=0, columnspan=2, sticky="w", padx=5)
-        self.passenger_data["Password"] = ctk.CTkEntry(form_frame, width=320)
+        self.passenger_data["Password"] = ctk.CTkEntry(form_frame1, width=320)
         self.passenger_data["Password"].grid(row=9, column=0, columnspan=2, padx=5, pady=5)
 
-        payment_label = ctk.CTkLabel(form_frame, text="Payment Methods *", text_color=TEXT_COLOR)
-        payment_label.grid(row=10, column=0, columnspan=2, sticky="w", padx=5)
+        contact_label = ctk.CTkLabel(form_frame1, text="Contact Number *", text_color=TEXT_COLOR)
+        contact_label.grid(row=10, column=0, columnspan=2, sticky="w", padx=5)
+        self.passenger_data["Contact Number"] = ctk.CTkEntry(form_frame1, width=320)
+        self.passenger_data["Contact Number"].grid(row=11, column=0, columnspan=2, padx=5, pady=5)
 
         self.gcash_var = ctk.BooleanVar()
         self.paymaya_var = ctk.BooleanVar()
@@ -333,10 +335,10 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         self.payment_method = ctk.StringVar(value="Cash")
 
-        ctk.CTkRadioButton(form_frame, text="GCash", variable=self.payment_method, value="GCash").grid(row=14, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=16, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=18, column=0, sticky="w", padx=10)
-        ctk.CTkRadioButton(form_frame, text="Cash", variable=self.payment_method, value="Cash").grid(row=20, column=0, sticky="w", padx=10, pady=(0, 10))
+        ctk.CTkRadioButton(form_frame1, text="GCash", variable=self.payment_method, value="GCash").grid(row=14, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame1, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=16, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame1, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=18, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame1, text="Cash", variable=self.payment_method, value="Cash").grid(row=20, column=0, sticky="w", padx=10, pady=(0, 10))
 
         button_frame = ctk.CTkFrame(scrollable_frame)
         button_frame.pack(fill="x", padx=10, pady=10)
@@ -390,17 +392,17 @@ Fast as Duck, Quack! Quack! Quack!"""
         fields = ["First Name", "Last Name", "Gender", "Age", "Address", "Contact Number",
                   "Vehicle Type", "Vehicle Model", "Vehicle Color", "Plate Number", "Qualifications", "Password"]
 
-        scrollable_frame2 = ctk.CTkScrollableFrame(self, width=500, height=600)
+        scrollable_frame2 = ctk.CTkScrollableFrame(self, width=500, height=1000)
         scrollable_frame2.pack(fill="both", expand=True, padx=10, pady=10)
 
         ctk.CTkLabel(scrollable_frame2, text="Drivers Registration", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=10)
-        form_frame = ctk.CTkFrame(scrollable_frame2, fg_color="transparent")
-        form_frame.pack(padx=10, pady=10, fill="both", expand=True)
+        form_frame2 = ctk.CTkFrame(scrollable_frame2, fg_color="transparent")
+        form_frame2.pack(padx=10, pady=10, fill="both", expand=True)
 
         def create_entry(label_text, row, column):
-            label = ctk.CTkLabel(form_frame, text=label_text, text_color=TEXT_COLOR)
+            label = ctk.CTkLabel(form_frame2, text=label_text, text_color=TEXT_COLOR)
             label.grid(row=row, column=column, sticky="w", padx=5)
-            entry = ctk.CTkEntry(form_frame, width=150)
+            entry = ctk.CTkEntry(form_frame2, width=150)
             entry.grid(row=row+1, column=column, padx=5, pady=5)
             return entry
 
@@ -409,26 +411,34 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.driver_data["Gender"] = create_entry("Gender *", 2, 0)
         self.driver_data["Age"] = create_entry("Age *", 2, 1)
 
-        contact_label = ctk.CTkLabel(form_frame, text="Contact Number *", text_color=TEXT_COLOR)
-        contact_label.grid(row=4, column=0, columnspan=2, sticky="w", padx=5)
-        self.driver_data["Contact Number"] = ctk.CTkEntry(form_frame, width=320)
-        self.driver_data["Contact Number"].grid(row=5, column=0, columnspan=2, padx=5, pady=5)
+        username_label = ctk.CTkLabel(form_frame2, text="Username *", text_color=TEXT_COLOR)
+        username_label.grid(row=4, column=0, columnspan=2, sticky="w", padx=5)
+        self.driver_data["Username"] = ctk.CTkEntry(form_frame2, width=320)
+        self.driver_data["Username"].grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
         self.driver_data["Vehicle Type"] = create_entry("Vehicle Type *", 7, 0)
         self.driver_data["Vehicle Model"] = create_entry("Vehicle Model *", 7, 1)
         self.driver_data["Vehicle Color"] = create_entry("Vehicle Color *", 9, 0)
         self.driver_data["Plate Number"] = create_entry("Plate Number *", 9, 1 )
 
-        contact_label = ctk.CTkLabel(form_frame, text="Password *", text_color=TEXT_COLOR)
-        contact_label.grid(row=12, column=0, columnspan=2, sticky="w", padx=5)
-        self.driver_data["Password"] = ctk.CTkEntry(form_frame, width=320)
+        password_label = ctk.CTkLabel(form_frame2, text="Password *", text_color=TEXT_COLOR)
+        password_label.grid(row=12, column=0, columnspan=2, sticky="w", padx=5)
+        self.driver_data["Password"] = ctk.CTkEntry(form_frame2, width=320)
         self.driver_data["Password"].grid(row=14, column=0, columnspan=2, padx=1, pady=5)
+
+        contact_label = ctk.CTkLabel(form_frame2, text="Contact Number *", text_color=TEXT_COLOR)
+        contact_label.grid(row=15, column=0, columnspan=2, sticky="w", padx=5)
+        self.driver_data["Contact Number"] = ctk.CTkEntry(form_frame2, width=320)
+        self.driver_data["Contact Number"].grid(row=17, column=0, columnspan=2, padx=1, pady=5)
+
+        self.payment_method = ctk.StringVar(value="Cash")
+        ctk.CTkRadioButton(form_frame2, text="GCash", variable=self.payment_method, value="GCash").grid(row=19, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame2, text="PayMaya", variable=self.payment_method, value="PayMaya").grid(row=21, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame2, text="PayPal", variable=self.payment_method, value="PayPal").grid(row=23, column=0, sticky="w", padx=10)
+        ctk.CTkRadioButton(form_frame2, text="Cash", variable=self.payment_method, value="Cash").grid(row=25, column=0, sticky="w", padx=10, pady=(0, 10))
 
         button_frame = ctk.CTkFrame(scrollable_frame2)
         button_frame.pack(fill="x", padx=10, pady=10)
-
-        button_frame = ctk.CTkFrame(scrollable_frame2)
-        button_frame.pack(fill="x", padx=12, pady=12)
 
         ctk.CTkButton(button_frame, text="Submit", command=self.save_driver).pack(pady=15)
         ctk.CTkButton(button_frame, text="Back", command=self.create_home_screen).pack()
@@ -456,22 +466,36 @@ Fast as Duck, Quack! Quack! Quack!"""
             messagebox.showerror("Invalid Input", "Please enter a Valid Age. Driver should be of legal Age")
             return 
         
-        try: 
-            contact_num = int(data_driver["Contact Number"])
-            if not contact_num.len(contact_num) != 11:
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Invalid Input", "Contact Number must be exactly 11 digits.") 
+        contact_num = data_driver["Contact Number"].strip()
+        if not (contact_num.isdigit() and len(contact_num) == 11):
+            messagebox.showerror("Invalid Input", "Contact Number must be exactly 11 digits.")
+            return
 
         vehicle = Vehicle(data_driver["Vehicle Type"], data_driver["Vehicle Model"], data_driver["Vehicle Color"], data_driver["Plate Number"])
-        driver = Driver(data_driver["First Name"], data_driver["Last Name"], data_driver["Gender"], data_driver["Address"],
-                        data_driver["Contact Number"], vehicle, data_driver["Qualifications"])
+        driver = Driver(
+            data_driver["First Name"],
+            data_driver["Last Name"],
+            data_driver["Gender"],
+            data_driver.get("Address", ""),
+            data_driver["Username"],
+            vehicle,
+        )
 
         with open(DRIVERS_PATH, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([driver.first_name, driver.last_name, driver.gender, driver.address, driver.contact_info,
-                             driver.vehicle.vehicle_type, driver.vehicle.model, driver.vehicle.color, driver.vehicle.plate_number,
-                             driver.qualifications, driver.join_date])
+            writer.writerow([
+                data_driver["First Name"],
+                data_driver["Last Name"],
+                data_driver["Gender"],
+                data_driver["Age"],
+                data_driver["Username"],
+                data_driver["Vehicle Type"],
+                data_driver["Vehicle Model"],
+                data_driver["Vehicle Color"],
+                data_driver["Plate Number"],
+                data_driver["Password"],
+                data_driver["Contact Number"]
+            ])
 
         with open(USERS_PATH, mode='a', newline='') as users_file:
             users_writer = csv.writer(users_file)
