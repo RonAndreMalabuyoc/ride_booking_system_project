@@ -108,6 +108,9 @@ class DuckDashApp(ctk.CTk):
 
     def show_login_screen(self):
         self.clear_window()
+        # Ensure window is visible after logout
+        self.attributes("-alpha", 1.0)
+        print("[DEBUG] show_login_screen called")
 
         tagline_text = """Lookin for a Ride?
 Book a Ride at DUCK DASH!
@@ -118,7 +121,7 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         ctk.CTkLabel(self, text="Login", font=("Arial", 20, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
-        username_label = ctk.CTkLabel(self, text="Username - Contact #", text_color=TEXT_COLOR)
+        username_label = ctk.CTkLabel(self, text="Username", text_color=TEXT_COLOR)
         username_label.pack()
         self.username_entry = ctk.CTkEntry(self, width=200)
         self.username_entry.pack(pady=5)
@@ -168,15 +171,8 @@ Fast as Duck, Quack! Quack! Quack!"""
         book_img = Image.open(IMAGE_PATH)
         book_ctk_img = ctk.CTkImage(light_image=book_img, dark_image=book_img, size=(30, 30))
 
-        # Book a Ride button with image
-        ctk.CTkButton(
-            self,
-            text=" Book a Ride",
-            image=book_ctk_img,
-            compound="left",
-            font=("Arial", 18),
-            command=self.show_booking_screen  # This should point to your booking logic
-        ).pack(pady=15)
+        ctk.CTkButton(self, text=" Book a Ride", image=book_ctk_img, compound="left", font=("Arial", 18), command=self.show_booking_screen).pack(pady=15)
+        ctk.CTkButton(self, text="Log Out", font=("Arial", 15), command=self.show_login_screen).pack(pady=30)
 
     def show_booking_screen(self):
         self.clear_window()
@@ -192,20 +188,32 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         ctk.CTkLabel(self, text="Vehicle", text_color=TEXT_COLOR).pack(pady=5)
         self.selected_vehicle = ctk.StringVar(value=self.available_vehicles()[0])
-        ctk.CTkOptionMenu(self, variable=self.selected_vehicle, values=self.available_vehicles()).pack(pady=5)
+        self.vehicle_menu = ctk.CTkOptionMenu(self, variable=self.selected_vehicle, values=self.available_vehicles(), command=self.update_seat_options)
+        self.vehicle_menu.pack(pady=5)
 
         ctk.CTkLabel(self, text="Seat Count", text_color=TEXT_COLOR).pack()
-        self.seat_entry = ctk.CTkEntry(self, width=100)
-        self.seat_entry.pack(pady=5)
+        self.selected_seat = ctk.StringVar()
+        initial_seats = [str(seat) for seat in self.available_seats()[self.selected_vehicle.get()]]
+        self.selected_seat.set(initial_seats[0])
+        self.seat_menu = ctk.CTkOptionMenu(self, variable=self.selected_seat, values=initial_seats)
+        self.seat_menu.pack(pady=5)
 
         ctk.CTkButton(self, text="Calculate Fare & Show Map", command=self.process_booking).pack(pady=15)
-        ctk.CTkButton(self, text="Back to Dashboard", command=self.show_dashboard).pack()
+        ctk.CTkButton(self, text="Confirm Ride", command=self.confirm_ride).pack(pady=10)
+        ctk.CTkButton(self, text="Back to Dashboard", command=self.show_dashboard).pack(pady=10)
+
+    def update_seat_options(self, selected_vehicle):
+        seats = [str(seat) for seat in self.available_seats()[selected_vehicle]]
+        self.seat_menu.configure(values=seats)
+        self.selected_seat.set(seats[0])
 
     def available_vehicles(self):
         return ["Car", "Van", "Motorcycle"]
 
     def available_seats(self):
-        return {"Car": [4, 5, 6], "Van": [6, 8, 10, 15, 20], "Motorcycle": [1]}
+        return {"Car": [4, 5, 6],
+                "Van": [6, 8, 10, 15, 20], 
+                "Motorcycle": [1]}
 
     def total_fare(self, vehicle, distance_km):
         rates = {"Car": 45, "Van": 60, "Motorcycle": 30}
@@ -216,7 +224,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         dropoff = self.dropoff_entry.get().strip()
         vehicle = self.selected_vehicle.get()
         try:
-            seat_count = int(self.seat_entry.get().strip())
+            seat_count = int(self.selected_seat.get())
         except ValueError:
             messagebox.showerror("Invalid Input", "Seat count must be a number.")
             return
@@ -242,16 +250,15 @@ Fast as Duck, Quack! Quack! Quack!"""
         distance_km = geodesic(pickup_coords, dropoff_coords).kilometers
         fare = self.total_fare(vehicle, distance_km)
 
-        # Show Booking Summary
         summary = f"""
-        ✨ Booking Summary ✨
-        Vehicle: {vehicle}
-        Seats: {seat_count}
-        From: {pickup}
-        To: {dropoff}
-        Distance: {distance_km:.2f} km
-        Fare: ₱{fare:.2f}
-        """
+            ✨ Booking Summary ✨
+            Vehicle: {vehicle}
+            Seats: {seat_count}
+            From: {pickup}
+            To: {dropoff}
+            Distance: {distance_km:.2f} km
+            Fare: ₱{fare:.2f}
+            """
         messagebox.showinfo("Ride Summary", summary.strip())
 
         # Show route map
@@ -265,7 +272,35 @@ Fast as Duck, Quack! Quack! Quack!"""
         map_widget.set_marker(*dropoff_coords, text="Dropoff")
         map_widget.set_path([pickup_coords, dropoff_coords])
 
+    def confirm_ride(self):
+        pickup = self.pickup_entry.get().strip()
+        dropoff = self.dropoff_entry.get().strip()
+        vehicle = self.selected_vehicle.get()
+        seat = self.selected_seat.get()
+        geolocator = Nominatim(user_agent="duckdash_app_confirm")
+        pickup_loc = geolocator.geocode(pickup)
+        dropoff_loc = geolocator.geocode(dropoff)
+        if not pickup_loc or not dropoff_loc:
+            messagebox.showerror("Location Error", "Invalid pickup or dropoff address.")
+            return
+        pickup_coords = (pickup_loc.latitude, pickup_loc.longitude)
+        dropoff_coords = (dropoff_loc.latitude, dropoff_loc.longitude)
+        distance_km = geodesic(pickup_coords, dropoff_coords).kilometers
+        fare = self.total_fare(vehicle, distance_km)
+        details = f"""
+        ✅ Ride Confirmed!
 
+        --- Ride Details ---
+        Pickup Location: {pickup}
+        Dropoff Location: {dropoff}
+        Vehicle: {vehicle}
+        Seat Count: {seat}
+        Distance: {distance_km:.2f} km
+        Fare: ₱{fare:.2f}
+
+        Thank you for booking with Duck Dash!
+        """
+        messagebox.showinfo("Ride Confirmed", details.strip())
 
 
 #==================================================================================================================================================================
@@ -305,7 +340,13 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         self.passenger_data["First Name"] = create_entry("First Name *", 0, 0)
         self.passenger_data["Last Name"] = create_entry("Last Name *", 0, 1)
-        self.passenger_data["Gender"] = create_entry("Gender *", 2, 0)
+        
+        gender_label = ctk.CTkLabel(form_frame1, text="Gender *", text_color=TEXT_COLOR)
+        gender_label.grid(row=2, column=0, sticky="w", padx=5)
+        self.passenger_data["Gender"] = ctk.StringVar(value="Male")
+        gender_menu = ctk.CTkOptionMenu(form_frame1, variable=self.passenger_data["Gender"], values=["Male", "Female", "LGBTQ+", "Prefer Not to Say"])
+        gender_menu.grid(row=3, column=0, padx=5, pady=5)
+
         self.passenger_data["Age"] = create_entry("Age *", 2, 1)
 
         address_label = ctk.CTkLabel(form_frame1, text="Address *", text_color=TEXT_COLOR)
@@ -381,7 +422,7 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         with open(USERS_PATH, mode='a', newline='') as users_file:
             users_writer = csv.writer(users_file)
-            users_writer.writerow([data_passenger["Contact Number"], data_passenger["Password"]])
+            users_writer.writerow([data_passenger["Username"], data_passenger["Password"]])
 
         messagebox.showinfo("Success", "Passenger Registered Successfully!")
         self.create_home_screen()
@@ -408,7 +449,13 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         self.driver_data["First Name"] = create_entry("First Name *", 0, 0)
         self.driver_data["Last Name"] = create_entry("Last Name *", 0, 1)
-        self.driver_data["Gender"] = create_entry("Gender *", 2, 0)
+        
+        gender_label = ctk.CTkLabel(form_frame2, text="Gender *", text_color=TEXT_COLOR)
+        gender_label.grid(row=2, column=0, sticky="w", padx=5)
+        self.driver_data["Gender"] = ctk.StringVar(value="Male")
+        gender_menu = ctk.CTkOptionMenu(form_frame2, variable=self.driver_data["Gender"], values=["Male", "Female", "LGBTQ+", "Prefer Not to Say"])
+        gender_menu.grid(row=3, column=0, padx=5, pady=5)
+
         self.driver_data["Age"] = create_entry("Age *", 2, 1)
 
         username_label = ctk.CTkLabel(form_frame2, text="Username *", text_color=TEXT_COLOR)
@@ -499,7 +546,7 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         with open(USERS_PATH, mode='a', newline='') as users_file:
             users_writer = csv.writer(users_file)
-            users_writer.writerow([data_driver["Contact Number"], data_driver["Password"]])
+            users_writer.writerow([data_driver["Username"], data_driver["Password"]])
 
         messagebox.showinfo("Success", "Driver registered successfully!")
         self.create_home_screen()
