@@ -6,7 +6,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from datetime import datetime
 import csv
-import os
+from os import *
 from PIL import Image, ImageTk
 
 # Theme & Colors
@@ -15,6 +15,15 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
+
+# Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
+# Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
+
+IMAGE_PATH = path.join(path.dirname(__file__), "Banana_duck_logo_transparent.png")
+DUCK_INTRO_PATH = path.join(path.dirname(__file__), "Duck_app_Intro.wav")
+USERS_PATH = path.join(path.dirname(__file__), "users.csv")
+PASSENGERS_PATH = path.join(path.dirname(__file__), "passenger.csv")
+DRIVERS_PATH = path.join(path.dirname(__file__), "drivers.csv")
 
 # Base Classes
 class User:
@@ -66,11 +75,12 @@ class DuckDashApp(ctk.CTk):
     def show_logo_screen(self):
         import pygame
         pygame.mixer.init()
-        pygame.mixer.music.load("Duck_app_Intro.wav")
+        pygame.mixer.music.load(DUCK_INTRO_PATH)
         pygame.mixer.music.play()  # loop to keep playing during fade
 
         self.clear_window()
         image = Image.open(r"Banana_duck_logo_transparent.png")
+        image = Image.open(IMAGE_PATH)
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
@@ -88,7 +98,7 @@ class DuckDashApp(ctk.CTk):
         if not pygame.mixer.get_init():
             pygame.mixer.init()
         if not pygame.mixer.music.get_busy():
-            pygame.mixer.music.load("Duck_app_Intro.wav")
+            pygame.mixer.music.load(DUCK_INTRO_PATH)
             pygame.mixer.music.play()
         alpha = round(alpha + 0.05, 2)
         if alpha <= 1.0:
@@ -126,8 +136,8 @@ Fast as Duck, Quack! Quack! Quack!"""
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if os.path.exists("users.csv"):
-            with open("users.csv", mode='r') as file:
+        if path.exists(USERS_PATH):
+            with open(USERS_PATH, mode='r') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     if len(row) >= 2 and row[0] == username and row[1] == password:
@@ -242,12 +252,12 @@ Fast as Duck, Quack! Quack! Quack!"""
                       data_passenger.get("GCash Account"), data_passenger.get("PayMaya Account"), data_passenger.get("PayPal Account"),
                       self.cod_var.get())
 
-        with open("passenger.csv", mode='a', newline='') as file:
+        with open(PASSENGERS_PATH, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([passenger.first_name, passenger.last_name, passenger.gender, passenger.address, passenger.contact_info,
                              passenger.gcash_account, passenger.paymaya_account, passenger.paypal_account, passenger.cod_enabled])
 
-        with open("users.csv", mode='a', newline='') as users_file:
+        with open(USERS_PATH, mode='a', newline='') as users_file:
             users_writer = csv.writer(users_file)
             users_writer.writerow([data_passenger["Contact Number"], data_passenger["Password"]])
 
@@ -323,13 +333,13 @@ Fast as Duck, Quack! Quack! Quack!"""
         driver = Driver(data_driver["First Name"], data_driver["Last Name"], data_driver["Gender"], data_driver["Address"],
                         data_driver["Contact Number"], vehicle, data_driver["Qualifications"])
 
-        with open("drivers.csv", mode='a', newline='') as file:
+        with open(DRIVERS_PATH, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([driver.first_name, driver.last_name, driver.gender, driver.address, driver.contact_info,
                              driver.vehicle.vehicle_type, driver.vehicle.model, driver.vehicle.color, driver.vehicle.plate_number,
                              driver.qualifications, driver.join_date])
 
-        with open("users.csv", mode='a', newline='') as users_file:
+        with open(USERS_PATH, mode='a', newline='') as users_file:
             users_writer = csv.writer(users_file)
             users_writer.writerow([data_driver["Contact Number"], data_driver["Password"]])
 
