@@ -13,9 +13,10 @@ from PIL import Image, ImageTk
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
 
-PRIMARY_COLOR = '#fce7a2'
+PRIMARY_COLOR = "#fccd40"
 TEXT_COLOR = '#5c3d00'
 HEADER_COLOR = '#836953'
+BACKGROUND_COLOR = "#64b3c0"
 IMAGE_PATH = os.path.join(os.path.dirname(__file__), "Banana_duck_logo_transparent.png")
 DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
@@ -24,6 +25,8 @@ BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
 BOOKINGS_FILE = os.path.join(os.path.dirname(__file__), "bookings.csv")
 LOGIN_FILE = os.path.join(os.path.dirname(__file__), "login_duck.png")
 REGISTER_FILE = os.path.join(os.path.dirname(__file__), "register_duck.png")
+FOOTER_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "header_duck.png")
+
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
 
@@ -67,7 +70,7 @@ class DuckDashApp(ctk.CTk):
         super().__init__()
         self.title("Duck Dash")
         self.geometry("400x550")
-        self.configure(fg_color=PRIMARY_COLOR)
+        self.configure(fg_color=BACKGROUND_COLOR)
         self.after(100, self.show_logo_screen)
 
     def clear_window(self):                         # Reusable Code
@@ -87,7 +90,7 @@ class DuckDashApp(ctk.CTk):
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
-        logo_label = ctk.CTkLabel(self, image=ctk_image, text="", bg_color=PRIMARY_COLOR)
+        logo_label = ctk.CTkLabel(self, image=ctk_image, text="", bg_color=BACKGROUND_COLOR)
         logo_label.pack(pady=80)
 
         title = ctk.CTkLabel(self, text="Duck Dash", font=("Courier", 30, "bold"), text_color=TEXT_COLOR)
@@ -137,7 +140,7 @@ class DuckDashApp(ctk.CTk):
         register_img = Image.open(REGISTER_FILE)
         register_ctk_img = ctk.CTkImage(light_image=register_img, dark_image=register_img, size=(80, 80))
 
-        btn_frame = ctk.CTkFrame(self, fg_color=PRIMARY_COLOR)
+        btn_frame = ctk.CTkFrame(self, fg_color=BACKGROUND_COLOR)
         btn_frame.pack(pady=12)
 
         # Login Type Button + Label
@@ -161,6 +164,12 @@ class DuckDashApp(ctk.CTk):
         font=("Arial", 1),
         register_label = ctk.CTkLabel(btn_frame, text="Register Now!", font=("Arial", 14, "bold"), text_color=TEXT_COLOR)
         register_label.grid(row=1, column=1, pady=(5, 20))
+
+        if os.path.exists(FOOTER_IMAGE_PATH):
+            footer_img = Image.open(FOOTER_IMAGE_PATH)
+            footer_ctk_img = ctk.CTkImage(light_image=footer_img, dark_image=footer_img, size=(400, 200))
+            footer_label = ctk.CTkLabel(self, image=footer_ctk_img, text="", bg_color=PRIMARY_COLOR)
+            footer_label.pack(side="bottom", fill="x")
 
     def verify_login_passenger(self):
         username = self.username_entry.get()
