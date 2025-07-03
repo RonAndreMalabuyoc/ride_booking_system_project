@@ -327,99 +327,24 @@ Fast as Duck, Quack! Quack! Quack!"""
 
 # ====== DRIVER DASHBOARD ======
 
-    def show_dashboard_driver(self):
-        self.clear_window()
-        ctk.CTkLabel(self, text="Welcome to Duck Dash!", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
-
-        book_img = Image.open(IMAGE_PATH)
-        book_ctk_img = ctk.CTkImage(light_image=book_img, dark_image=book_img, size=(30, 30))
-
-        ctk.CTkButton(self, text=" Start Ride", image=book_ctk_img, compound="left", font=("Arial", 18), command=self.load_bookings).pack(pady=15)
-        ctk.CTkButton(self, text="Log Out", font=("Arial", 15), command=self.show_start_screen).pack(pady=30)
-
-        self.title_label = ctk.CTkLabel(self, text="Available Booked Rides", font=("Arial", 20))
-        self.title_label.pack(pady=10)
-
-        self.ride_listbox = ctk.CTkTextbox(self, width=550, height=200)
-        self.ride_listbox.pack(pady=10)
-
-        self.select_button = ctk.CTkButton(self, text="Select Ride", command=self.select_ride)
-        self.select_button.pack(pady=5)
-
-        self.accept_button = ctk.CTkButton(self, text="Accept Ride", command=self.accept_ride, state="disabled")
-        self.accept_button.pack(pady=5)
-
-        self.refresh_button = ctk.CTkButton(self, text="Refresh List", command=self.load_bookings)
-        self.refresh_button.pack(pady=5)
-
-        self.selected_ride_index = None
-        self.load_bookings()
-    
-    def load_bookings(self):
-        self.ride_listbox.delete("0.0", "end")
-        self.bookings = []
-
-        if not os.path.exists(BOOKINGS_FILE):
-            self.ride_listbox.insert("0.0", "No bookings available.")
-            return
-
-        with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            for i, row in enumerate(reader):
-                if row.get("Status", "").lower() == "pending":
-                    self.bookings.append(row)
-                    ride_info = f"[{i}] {row.get('Name', 'Passenger')} | From: {row.get('Pickup', '')} → {row.get('Dropoff', '')} at {row.get('Time', '')} | Vehicle: {row.get('Vehicle', '')} | Seat: {row.get('Seat', '')} | Fare: ₱{row.get('Fare', '')}"
-                    self.ride_listbox.insert("end", ride_info + "\n")
-
-    def select_ride(self):
-        index_prompt = ctk.CTkInputDialog(text="Enter ride number to select:", title="Select Ride")
-        index_str = index_prompt.get_input()
-        if index_str and index_str.isdigit():
-            index = int(index_str)
-            if 0 <= index < len(self.bookings):
-                self.selected_ride_index = index
-                self.accept_button.configure(state="normal")
-                messagebox.showinfo("Ride Selected", f"Ride #{index} selected.")
-            else:
-                messagebox.showerror("Invalid", "Invalid ride index!")
-
-    def accept_ride(self):
-        if self.selected_ride_index is not None:
-            with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
-                rows = list(csv.DictReader(file))
-
-            ride_to_accept = self.bookings[self.selected_ride_index]
-            for row in rows:
-                if (row.get("Name", "") == ride_to_accept.get("Name", "") and 
-                    row.get("Pickup", "") == ride_to_accept.get("Pickup", "") and 
-                    row.get("Dropoff", "") == ride_to_accept.get("Dropoff", "") and
-                    row.get("Time", "") == ride_to_accept.get("Time", "")):
-                    row["Status"] = "Accepted"
-                    break
-
-            fieldnames = rows[0].keys() if rows else ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
-            with open(BOOKINGS_FILE, "w", newline='', encoding="utf-8") as file:
-                writer = csv.DictWriter(file, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(rows)
-
-            messagebox.showinfo("Success", "Ride accepted!")
-            self.accept_button.configure(state="disabled")
-            self.load_bookings()
+    def show_dashboard_driver():
+        pass
 
 
 # ====== SCREEN AFTER START UP ====== REUSABLE Codes
-
     def create_login_screen(self):              # Reusable Code
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
             ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
+
+#==================================================================================================================================================================
+
             ctk.CTkButton(self, text="   Login as Passenger   ",font=("Arial", 18), command=self.passenger_login).pack(pady=(20,10))
             ctk.CTkButton(self, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
 
             ctk.CTkButton(self, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
-
+        
     def create_register_screen(self):             # Reusable Code
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
@@ -452,10 +377,11 @@ Fast as Duck, Quack! Quack! Quack!"""
         password_label.pack()
         self.password_entry = ctk.CTkEntry(self, show="*", width=200)
         self.password_entry.pack(pady=5)
-        
+
         ctk.CTkButton(self, text="Login", command=self.verify_login_passenger).pack(pady=10)
-    
-# ====== Login as Driver ======
+        ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
+
+# ====== Login as Driver ======  
 
     def driver_login(self):
         self.clear_window()
@@ -477,8 +403,9 @@ Fast as Duck, Quack! Quack! Quack!"""
         password_label.pack()
         self.password_entry = ctk.CTkEntry(self, show="*", width=200)
         self.password_entry.pack(pady=5)
-        
+
         ctk.CTkButton(self, text="Login", command=self.verify_login_driver).pack(pady=10)
+        ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
 
 # ====== Register as Passenger ======
 
