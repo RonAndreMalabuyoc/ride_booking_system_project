@@ -6,7 +6,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from datetime import datetime
 import csv
-from os import *
+import os
 from PIL import Image, ImageTk
 
 # Theme & Colors
@@ -15,24 +15,15 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
-<<<<<<< HEAD
 IMAGE_PATH = os.path.join(os.path.dirname(__file__), "Banana_duck_logo_transparent.png")
 DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 USERS_PATH = os.path.join(os.path.dirname(__file__), "users.csv")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
 DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
 BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
-=======
 
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
-
-IMAGE_PATH = path.join(path.dirname(__file__), "Banana_duck_logo_transparent.png")
-DUCK_INTRO_PATH = path.join(path.dirname(__file__), "Duck_app_Intro.wav")
-USERS_PATH = path.join(path.dirname(__file__), "users.csv")
-PASSENGERS_PATH = path.join(path.dirname(__file__), "passenger.csv")
-DRIVERS_PATH = path.join(path.dirname(__file__), "drivers.csv")
->>>>>>> 6b1e2684102958bd24a1dd0b4f736f4ca9eb7090
 
 # Base Classes
 class User:
@@ -88,7 +79,6 @@ class DuckDashApp(ctk.CTk):
         pygame.mixer.music.play()  # loop to keep playing during fade
 
         self.clear_window()
-        image = Image.open(r"Banana_duck_logo_transparent.png")
         image = Image.open(IMAGE_PATH)
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
@@ -145,7 +135,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if path.exists(USERS_PATH):
+        if os.path.exists(USERS_PATH):
             with open(USERS_PATH, mode='r') as file:
                 reader = csv.reader(file)
                 for row in reader:
