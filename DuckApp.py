@@ -273,54 +273,16 @@ Fast as Duck, Quack! Quack! Quack!"""
         map_widget.set_marker(*dropoff_coords, text="Dropoff")
         map_widget.set_path([pickup_coords, dropoff_coords])
 
-    def confirm_ride(self):
-        pickup = self.pickup_entry.get().strip()
-        dropoff = self.dropoff_entry.get().strip()
-        vehicle = self.selected_vehicle.get()
-        seat = self.selected_seat.get()
-        geolocator = Nominatim(user_agent="duckdash_app_confirm")
-        pickup_loc = geolocator.geocode(pickup)
-        dropoff_loc = geolocator.geocode(dropoff)
-        if not pickup_loc or not dropoff_loc:
-            messagebox.showerror("Location Error", "Invalid pickup or dropoff address.")
-            return
-        pickup_coords = (pickup_loc.latitude, pickup_loc.longitude)
-        dropoff_coords = (dropoff_loc.latitude, dropoff_loc.longitude)
-        distance_km = geodesic(pickup_coords, dropoff_coords).kilometers
-        fare = self.total_fare(vehicle, distance_km)
-        details = f"""
-        ✅ Ride Confirmed!
 
-        --- Ride Details ---
-        Pickup Location: {pickup}
-        Dropoff Location: {dropoff}
-        Vehicle: {vehicle}
-        Seat Count: {seat}
-        Distance: {distance_km:.2f} km
-        Fare: ₱{fare:.2f}
 
-        Thank you for booking with Duck Dash!
-        """
-        messagebox.showinfo("Ride Confirmed", details.strip())
-        
-# ====== DRIVER DASHBOARD ======
 
-    def show_dashboard_driver():
-        pass
+#==================================================================================================================================================================
 
-# ====== SCREEN AFTER START UP ====== REUSABLE Codes
 
-    def create_login_screen(self):              # Reusable Code
-            self.clear_window()
-            ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
-            ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
-            ctk.CTkButton(self, text="   Login as Passenger   ",font=("Arial", 18), command=self.passenger_login).pack(pady=(20,10))
-            ctk.CTkButton(self, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
 
-            ctk.CTkButton(self, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
 
-    def create_register_screen(self):             # Reusable Code
+    def create_home_screen(self):
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
             ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
@@ -352,10 +314,9 @@ Fast as Duck, Quack! Quack! Quack!"""
         password_label.pack()
         self.password_entry = ctk.CTkEntry(self, show="*", width=200)
         self.password_entry.pack(pady=5)
-        
+
         ctk.CTkButton(self, text="Login", command=self.verify_login_passenger).pack(pady=10)
-    
-# ====== Login as Driver ======
+        ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
 
     def driver_login(self):
         self.clear_window()
@@ -377,8 +338,9 @@ Fast as Duck, Quack! Quack! Quack!"""
         password_label.pack()
         self.password_entry = ctk.CTkEntry(self, show="*", width=200)
         self.password_entry.pack(pady=5)
-        
+
         ctk.CTkButton(self, text="Login", command=self.verify_login_driver).pack(pady=10)
+        ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
 
 # ====== Register as Passenger ======
 
