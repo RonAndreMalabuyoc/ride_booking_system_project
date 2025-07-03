@@ -9,7 +9,6 @@ import csv
 import os
 from PIL import Image, ImageTk
 
-# Theme & Colors
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
 
@@ -27,9 +26,6 @@ LOGIN_FILE = os.path.join(os.path.dirname(__file__), "login_duck.png")
 REGISTER_FILE = os.path.join(os.path.dirname(__file__), "register_duck.png")
 FOOTER_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "header_duck.png")
 HEADER_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "motor_duck.png")
-
-# Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
-# Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
 
 # Base Classes
 class User:
@@ -107,7 +103,7 @@ class DuckDashApp(ctk.CTk):
         import pygame
         pygame.mixer.init()
         pygame.mixer.music.load(DUCK_INTRO_PATH)
-        pygame.mixer.music.play()  # loop to keep playing during fade
+        pygame.mixer.music.play()
 
         self.clear_window()
         image = Image.open(IMAGE_PATH)
@@ -191,7 +187,7 @@ class DuckDashApp(ctk.CTk):
     def verify_login_passenger(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-    def verify_login_passenger(self):                     # Login Button Functionality
+    def verify_login_passenger(self):
         try:
             username = self.username_entry.get()
             password = self.password_entry.get()
@@ -245,7 +241,6 @@ class DuckDashApp(ctk.CTk):
         self.clear_window()
         ctk.CTkLabel(self, text="Duck Dash", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
-        # Load the image for the booking button
         book_img = Image.open(IMAGE_PATH)
         book_ctk_img = ctk.CTkImage(light_image=book_img, dark_image=book_img, size=(30, 30))
 
@@ -270,7 +265,6 @@ class DuckDashApp(ctk.CTk):
             messagebox.showinfo("No Bookings", "You have no pending bookings to cancel.")
             return
 
-        # Write back the updated bookings
         with open(BOOKINGS_FILE, 'w', newline='', encoding='utf-8') as file:
             fieldnames = ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
             writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -366,7 +360,6 @@ class DuckDashApp(ctk.CTk):
             """
         messagebox.showinfo("Ride Summary", summary.strip())
 
-        # Show route map
         map_window = tk.Toplevel(self)
         map_window.title("Route Map")
         map_widget = TkinterMapView(map_window, width=800, height=600, corner_radius=0)
@@ -406,11 +399,10 @@ class DuckDashApp(ctk.CTk):
         Thank you for booking with Duck Dash!
         """
         messagebox.showinfo("Ride Confirmed", details.strip())
-        # Save booking as a row with all required fields for driver dashboard
         import datetime
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         booking_row = {
-            "Name": "Passenger",  # You can replace with actual passenger name if available
+            "Name": "Passenger",
             "Pickup": pickup,
             "Dropoff": dropoff,
             "Time": now,
@@ -560,7 +552,7 @@ class DuckDashApp(ctk.CTk):
         ctk.CTkButton(content_frame, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
         ctk.CTkButton(content_frame, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
 
-    def create_register_screen(self):             # Reusable Code
+    def create_register_screen(self):
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
             ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
