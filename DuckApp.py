@@ -127,8 +127,14 @@ Fast as Duck, Quack! Quack! Quack!"""
         ctk.CTkButton(self, text="Register Now!", command=self.create_register_screen).pack(pady=5)
 
     def verify_login_passenger(self):                     # Login Button Functionality
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        try:
+            username = self.username_entry.get()
+            password = self.password_entry.get()
+            if not username or not password:
+                raise ValueError("Please enter both username and password.")
+        except Exception as e:
+            messagebox.showerror("Input Error", str(e))
+            return
 
         if os.path.exists(PASSENGERS_PATH):
             with open(PASSENGERS_PATH, mode='r') as file:
@@ -141,8 +147,14 @@ Fast as Duck, Quack! Quack! Quack!"""
         messagebox.showerror("Login Failed", "Invalid username or password. Please register if you don't have an account.")
         
     def verify_login_driver(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        try:
+            username = self.username_entry.get()
+            password = self.password_entry.get()
+            if not username or not password:
+                raise ValueError("Please enter both username and password.")
+        except Exception as e:
+            messagebox.showerror("Input Error", str(e))
+            return
 
         if os.path.exists(DRIVERS_PATH):
             with open(DRIVERS_PATH, mode='r') as file:

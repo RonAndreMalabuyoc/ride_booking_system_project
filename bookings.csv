@@ -1,2 +1,2 @@
-"Imus, Cavite","Manila, Philippines",Car,4,18.48,831.41,,Status
-Passenger,"Imus, Cavite","Manila, Philippines",2025-07-03 21:49:00,Pending,Car,"['4', '18.48', '831.41']",Accepted
+Name,Pickup,Dropoff,Time,Status,Vehicle,Seat,Distance,Fare
+Passenger,"Imus, Cavite","Manila, Philippines",2025-07-04 02:52:01,Accepted,Car,4,18.48,831.41
