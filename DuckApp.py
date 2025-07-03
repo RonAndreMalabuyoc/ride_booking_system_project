@@ -20,11 +20,7 @@ DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
 DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
 BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
-<<<<<<< HEAD
-BOOKINGS_FILE = "bookings.csv"
-=======
 BOOKINGS_FILE = os.path.join(os.path.dirname(__file__), "bookings.csv")
->>>>>>> 1c9205670be8a2242f4138583431396105256aac
 
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
@@ -342,14 +338,14 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.select_button.pack(pady=5)
         self.accept_button = ctk.CTkButton(self, text="Accept Ride", command=self.accept_ride, state="disabled")
         self.accept_button.pack(pady=5)
-        self.refresh_button = ctk.CTkButton(self, text="Refresh List", command=self.load_bookings)
+        self.refresh_button = ctk.CTkButton(self, text="Refresh List", command=self.load_bookings())
         self.refresh_button.pack(pady=5)
         self.logout_button = ctk.CTkButton(self, text="Log Out", command=self.show_start_screen)
         self.logout_button.pack(pady=20)
         self.selected_ride_index = None
-        self.load_bookings(show_all=True)
+        self.load_bookings
 
-    def load_bookings(self, show_all=False):
+    def load_bookings(self):
         self.ride_listbox.delete("0.0", "end")
         self.bookings = []
 
@@ -357,48 +353,56 @@ Fast as Duck, Quack! Quack! Quack!"""
             self.ride_listbox.insert("0.0", "No bookings available.")
             return
 
-        with open(BOOKINGS_FILE, newline="") as file:
+        with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             for i, row in enumerate(reader):
-                if show_all or row["Status"].lower() == "pending":
-                    self.bookings.append(row)
-                    ride_info = f"[{i}] {row['Name']} | From: {row['Pickup']} → {row['Dropoff']} at {row['Time']} | Status: {row['Status']}"
-                    self.ride_listbox.insert("end", ride_info + "\n")
+                if not any(row.values()):
+                    continue
+                name = row.get("Name", "Unknown")
+                pickup = row.get("Pickup", "?")
+                dropoff = row.get("Dropoff", "?")
+                time = row.get("Time", "?")
+                status = row.get("Status", "?")
+                
+                self.bookings.append(row)
+                ride_info = f"[{i}] {name} | From: {pickup} → {dropoff} at {time} | Status: {status}"
+                self.ride_listbox.insert("end", ride_info + "\n")
+        if not self.bookings:
+            self.ride_listbox.insert("0.0", "No bookings available.")
 
-    def select_ride(self):
-        index_prompt = ctk.CTkInputDialog(text="Enter ride number to select:", title="Select Ride")
-        index_str = index_prompt.get_input()
-        if index_str and index_str.isdigit():
-            index = int(index_str)
-            if 0 <= index < len(self.bookings):
-                self.selected_ride_index = index
-                self.accept_button.configure(state="normal")
-                ctk.CTkMessagebox(title="Ride Selected", message=f"Ride #{index} selected.", icon="check")
-            else:
-                ctk.CTkMessagebox(title="Invalid", message="Invalid ride index!", icon="cancel")
+        def select_ride(self):
+            index_prompt = ctk.CTkInputDialog(text="Enter ride number to select:", title="Select Ride")
+            index_str = index_prompt.get_input()
+            if index_str and index_str.isdigit():
+                index = int(index_str)
+                if 0 <= index < len(self.bookings):
+                    self.selected_ride_index = index
+                    self.accept_button.configure(state="normal")
+                    ctk.CTkMessagebox(title="Ride Selected", message=f"Ride #{index} selected.", icon="check")
+                else:
+                    ctk.CTkMessagebox(title="Invalid", message="Invalid ride index!", icon="cancel")
 
-    def accept_ride(self):
-        if self.selected_ride_index is not None:
-            with open(BOOKINGS_FILE, newline="") as file:
-                rows = list(csv.DictReader(file))
-
-            pending_rides = [r for r in rows if r["Status"].lower() == "pending"]
-            ride_to_accept = self.bookings[self.selected_ride_index]
-            for row in rows:
-                if (row["Name"] == ride_to_accept["Name"] and 
-                    row["Pickup"] == ride_to_accept["Pickup"] and 
-                    row["Dropoff"] == ride_to_accept["Dropoff"]):
-                    row["Status"] = "Accepted"
+        def accept_ride(self):
+            if self.selected_ride_index is not None:
+                with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
+                    rows = list(csv.DictReader(file))
+                ride_to_accept = self.bookings[self.selected_ride_index]
+                for row in rows:
+                    if (row.get("Name") == ride_to_accept.get("Name") and 
+                    row.get("Pickup") == ride_to_accept.get("Pickup") and 
+                    row.get("Dropoff") == ride_to_accept.get("Dropoff") and
+                    row.get("Time") == ride_to_accept.get("Time")):
+                        row["Status"] = "Accepted"
                     break
+                fieldnames = rows[0].keys() if rows else ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
+                with open(BOOKINGS_FILE, "w", newline="", encoding="utf-8") as file:
+                    writer = csv.DictWriter(file, fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerows(rows)
 
-            with open(BOOKINGS_FILE, "w", newline="") as file:
-                writer = csv.DictWriter(file, fieldnames=["Name", "Pickup", "Dropoff", "Time", "Status"])
-                writer.writeheader()
-                writer.writerows(rows)
-
-            ctk.CTkMessagebox(title="Success", message="Ride accepted!", icon="check")
-            self.accept_button.configure(state="disabled")
-            self.load_bookings()
+                ctk.CTkMessagebox(title="Success", message="Ride accepted!", icon="check")
+                self.accept_button.configure(state="disabled")
+                self.load_bookings()
 
 
             
