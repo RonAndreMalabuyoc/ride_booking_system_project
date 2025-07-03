@@ -247,6 +247,14 @@ Fast as Duck, Quack! Quack! Quack!"""
                                  f"Please fill in the following required Information:\n{','.join(missing_fields)}")
             return
 
+        try: 
+            age= int(data_passenger["Age"])
+            if age <=17:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a Valid Age. Passenger should be 18 and above.")
+            return 
+        
         passenger = Passenger(data_passenger["First Name"], data_passenger["Last Name"], data_passenger["Gender"],
                       data_passenger["Address"], data_passenger["Contact Number"],
                       data_passenger.get("GCash Account"), data_passenger.get("PayMaya Account"), data_passenger.get("PayPal Account"),
@@ -328,6 +336,21 @@ Fast as Duck, Quack! Quack! Quack!"""
             messagebox.showerror("Error", 
                                  f"Please fill in the following required Information:\n{','.join(missing_fields)}")
             return
+
+        try:
+            age = int(data_driver["Age"])
+            if age <=17:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a Valid Age. Driver should be of legal Age")
+            return 
+        
+        try: 
+            contact_num = int(data_driver["Contact Number"])
+            if not contact_num.len(contact_num) != 11:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Contact Number must be exactly 11 digits.") 
 
         vehicle = Vehicle(data_driver["Vehicle Type"], data_driver["Vehicle Model"], data_driver["Vehicle Color"], data_driver["Plate Number"])
         driver = Driver(data_driver["First Name"], data_driver["Last Name"], data_driver["Gender"], data_driver["Address"],
