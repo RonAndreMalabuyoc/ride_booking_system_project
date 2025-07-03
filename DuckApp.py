@@ -15,13 +15,15 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
+HEADER_COLOR = '#836953'
 IMAGE_PATH = os.path.join(os.path.dirname(__file__), "Banana_duck_logo_transparent.png")
 DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
 DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
 BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
 BOOKINGS_FILE = os.path.join(os.path.dirname(__file__), "bookings.csv")
-
+LOGIN_FILE = os.path.join(os.path.dirname(__file__), "login_duck.png")
+REGISTER_FILE = os.path.join(os.path.dirname(__file__), "register_duck.png")
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
 
@@ -112,26 +114,59 @@ class DuckDashApp(ctk.CTk):
 
     def show_start_screen(self):
         self.clear_window()
-        # Ensure window is visible after logout
         self.attributes("-alpha", 1.0)
         print("[DEBUG] show_start_screen called")
 
-        tagline_text = """Lookin for a Ride?
-Book a Ride at DUCK DASH!
+        self.clear_window()
+        header_frame = ctk.CTkFrame(self, fg_color=HEADER_COLOR)
+        header_frame.pack(fill="x")
 
-Fast as Duck, Quack! Quack! Quack!"""
-        tagline = ctk.CTkLabel(self, text=tagline_text, font=("Courier", 14, "bold"), text_color=TEXT_COLOR, justify="center")
-        tagline.pack(pady=20)
+        ctk.CTkLabel(
+                header_frame,
+                text="Duck Dash",
+                font=("Courier", 28, "bold"),
+                text_color=PRIMARY_COLOR,
+                fg_color=HEADER_COLOR
+            ).pack(pady=40, padx=30, anchor="w")
 
-        ctk.CTkButton(self, text="Login Type", command=self.create_login_screen).pack(pady=5)
-        ctk.CTkButton(self, text="Register Now!", command=self.create_register_screen).pack(pady=5)
+        ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
-    def verify_login_passenger(self):                     # Login Button Functionality
+        # Load images for buttons (make sure these files exist in your folder)
+        login_img = Image.open(LOGIN_FILE)
+        login_ctk_img = ctk.CTkImage(light_image=login_img, dark_image=login_img, size=(80, 80))
+        register_img = Image.open(REGISTER_FILE)
+        register_ctk_img = ctk.CTkImage(light_image=register_img, dark_image=register_img, size=(80, 80))
+
+        btn_frame = ctk.CTkFrame(self, fg_color=PRIMARY_COLOR)
+        btn_frame.pack(pady=12)
+
+        # Login Type Button + Label
+        login_btn = ctk.CTkButton(
+            btn_frame, image=login_ctk_img, text="", width=80, height=80,
+            font=("Arial", 1),
+            border_width=0,
+            command=self.create_login_screen
+        )
+        login_btn.grid(row=0, column=0, padx=30)
+        login_label = ctk.CTkLabel(btn_frame, text="Login Type", font=("Arial", 14, "bold"), text_color=TEXT_COLOR)
+        login_label.grid(row=1, column=0, pady=(5, 20))
+
+        # Register Now Button + Label
+        register_btn = ctk.CTkButton(
+            btn_frame, image=register_ctk_img, text="", width=80, height=80,
+            border_width=0,
+            command=self.create_register_screen
+        )
+        register_btn.grid(row=0, column=1, padx=30)
+        font=("Arial", 1),
+        register_label = ctk.CTkLabel(btn_frame, text="Register Now!", font=("Arial", 14, "bold"), text_color=TEXT_COLOR)
+        register_label.grid(row=1, column=1, pady=(5, 20))
+
+    def verify_login_passenger(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if os.path.exists(PASSENGERS_PATH):
-            with open(PASSENGERS_PATH, mode='r') as file:
+        with open(PASSENGERS_PATH, mode='r') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     if len(row) >= 6 and row[5] == username and row[6] == password:
@@ -201,15 +236,6 @@ Fast as Duck, Quack! Quack! Quack!"""
         messagebox.showinfo("Cancelled", "Your most recent pending booking has been cancelled.")
         self.show_dashboard_passenger()
         
-        # Write back the updated bookings
-        with open(BOOKINGS_FILE, 'w', newline='', encoding='utf-8') as file:
-            fieldnames = ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
-        messagebox.showinfo("Cancelled", "Your most recent pending booking has been cancelled.")
-        self.show_dashboard_passenger()
-
     def show_booking_screen(self):
         self.clear_window()
         ctk.CTkLabel(self, text="Book a Ride", font=("Arial", 22, "bold"), text_color=TEXT_COLOR).pack(pady=20)
@@ -438,10 +464,19 @@ Fast as Duck, Quack! Quack! Quack!"""
                 self.load_bookings()
                 
 
-# ====== SCREEN AFTER START UP ====== REUSABLE Codes
-    def create_login_screen(self):              # Reusable Code
+    def create_login_screen(self):
             self.clear_window()
-            ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
+            header_frame = ctk.CTkFrame(self, fg_color=HEADER_COLOR)
+            header_frame.pack(fill="x")
+
+            ctk.CTkLabel(
+                header_frame,
+                text="Duck Dash",
+                font=("Courier", 28, "bold"),
+                text_color=PRIMARY_COLOR,
+                fg_color=HEADER_COLOR
+            ).pack(pady=40, padx=30, anchor="w")
+
             ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
 
@@ -724,8 +759,7 @@ Fast as Duck, Quack! Quack! Quack!"""
             vehicle,
         )
 
-        if os.path.exists(DRIVERS_PATH):
-            with open(DRIVERS_PATH, mode='a', newline='') as file:
+        with open(DRIVERS_PATH, mode='a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([
                     data_driver["First Name"],
