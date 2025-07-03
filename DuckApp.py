@@ -26,6 +26,7 @@ BOOKINGS_FILE = os.path.join(os.path.dirname(__file__), "bookings.csv")
 LOGIN_FILE = os.path.join(os.path.dirname(__file__), "login_duck.png")
 REGISTER_FILE = os.path.join(os.path.dirname(__file__), "register_duck.png")
 FOOTER_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "header_duck.png")
+HEADER_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "motor_duck.png")
 
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
@@ -72,6 +73,29 @@ class DuckDashApp(ctk.CTk):
         self.geometry("400x550")
         self.configure(fg_color=BACKGROUND_COLOR)
         self.after(100, self.show_logo_screen)
+    def add_footer_image(self):
+        if os.path.exists(FOOTER_IMAGE_PATH):
+            footer_img = Image.open(FOOTER_IMAGE_PATH)
+            footer_ctk_img = ctk.CTkImage(light_image=footer_img, dark_image=footer_img, size=(400, 200))
+            footer_label = ctk.CTkLabel(self, image=footer_ctk_img, text="", bg_color=PRIMARY_COLOR)
+            footer_label.pack(side="bottom", fill="x")
+
+    def add_header(self, parent):
+        header_frame = ctk.CTkFrame(parent, fg_color=HEADER_COLOR)
+        header_frame.pack(fill="x", side="top")
+        if os.path.exists(HEADER_IMAGE_PATH):
+            duck_img = Image.open(HEADER_IMAGE_PATH)
+            duck_ctk_img = ctk.CTkImage(light_image=duck_img, dark_image=duck_img, size=(60, 60))
+            duck_label = ctk.CTkLabel(header_frame, image=duck_ctk_img, text="", fg_color=HEADER_COLOR)
+            duck_label.pack(side="right", padx=20, pady=10)
+            duck_label.image = duck_ctk_img  # Prevent garbage collection
+        ctk.CTkLabel(
+            header_frame,
+            text="Duck Dash",
+            font=("Courier", 28, "bold"),
+            text_color=PRIMARY_COLOR,
+            fg_color=HEADER_COLOR
+    ).pack(side="left", padx=30, pady=20)
 
     def clear_window(self):                         # Reusable Code
         for widget in self.winfo_children():
@@ -134,7 +158,6 @@ class DuckDashApp(ctk.CTk):
 
         ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
-        # Load images for buttons (make sure these files exist in your folder)
         login_img = Image.open(LOGIN_FILE)
         login_ctk_img = ctk.CTkImage(light_image=login_img, dark_image=login_img, size=(80, 80))
         register_img = Image.open(REGISTER_FILE)
@@ -143,7 +166,6 @@ class DuckDashApp(ctk.CTk):
         btn_frame = ctk.CTkFrame(self, fg_color=BACKGROUND_COLOR)
         btn_frame.pack(pady=12)
 
-        # Login Type Button + Label
         login_btn = ctk.CTkButton(
             btn_frame, image=login_ctk_img, text="", width=80, height=80,
             font=("Arial", 1),
@@ -154,7 +176,6 @@ class DuckDashApp(ctk.CTk):
         login_label = ctk.CTkLabel(btn_frame, text="Login Type", font=("Arial", 14, "bold"), text_color=TEXT_COLOR)
         login_label.grid(row=1, column=0, pady=(5, 20))
 
-        # Register Now Button + Label
         register_btn = ctk.CTkButton(
             btn_frame, image=register_ctk_img, text="", width=80, height=80,
             border_width=0,
@@ -164,12 +185,8 @@ class DuckDashApp(ctk.CTk):
         font=("Arial", 1),
         register_label = ctk.CTkLabel(btn_frame, text="Register Now!", font=("Arial", 14, "bold"), text_color=TEXT_COLOR)
         register_label.grid(row=1, column=1, pady=(5, 20))
-
-        if os.path.exists(FOOTER_IMAGE_PATH):
-            footer_img = Image.open(FOOTER_IMAGE_PATH)
-            footer_ctk_img = ctk.CTkImage(light_image=footer_img, dark_image=footer_img, size=(400, 200))
-            footer_label = ctk.CTkLabel(self, image=footer_ctk_img, text="", bg_color=PRIMARY_COLOR)
-            footer_label.pack(side="bottom", fill="x")
+        
+        self.add_footer_image()
 
     def verify_login_passenger(self):
         username = self.username_entry.get()
@@ -226,7 +243,7 @@ class DuckDashApp(ctk.CTk):
     #MAP BOOKING
     def show_dashboard_passenger(self):
         self.clear_window()
-        ctk.CTkLabel(self, text="Welcome to Duck Dash!", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+        ctk.CTkLabel(self, text="Duck Dash", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
 
         # Load the image for the booking button
         book_img = Image.open(IMAGE_PATH)
@@ -235,6 +252,8 @@ class DuckDashApp(ctk.CTk):
         ctk.CTkButton(self, text=" Book a Ride", image=book_ctk_img, compound="left", font=("Arial", 18), command=self.show_booking_screen).pack(pady=15)
         ctk.CTkButton(self, text="Cancel My Ride", font=("Arial", 15), command=self.cancel_ride).pack(pady=10)
         ctk.CTkButton(self, text="Log Out", font=("Arial", 15), command=self.show_start_screen).pack(pady=30)
+        
+        self.add_footer_image()
         
     def cancel_ride(self):
         if not os.path.exists(BOOKINGS_FILE):
@@ -414,19 +433,62 @@ class DuckDashApp(ctk.CTk):
             self.clear_window()
 
     def show_dashboard_driver(self):
-            self.clear_window()
-            ctk.CTkLabel(self, text="Available Booked Rides", font=("Arial", 20)).pack(pady=10)
-            self.ride_listbox = ctk.CTkTextbox(self, width=350, height=200)
-            self.ride_listbox.pack(pady=10)
-            self.select_button = ctk.CTkButton(self, text="Select Ride", command=self.select_ride)
-            self.select_button.pack(pady=5)
-            self.accept_button = ctk.CTkButton(self, text="Accept Ride", command=self.accept_ride, state="disabled")
-            self.accept_button.pack(pady=5)
-            self.refresh_button = ctk.CTkButton(self, text="Refresh List", command=self.load_bookings)
-            self.refresh_button.pack(pady=5)
-            self.logout_button = ctk.CTkButton(self, text="Log Out", command=self.show_start_screen)
-            self.logout_button.pack(pady=20)
+        self.clear_window()
+        ctk.CTkLabel(self, text="Available Booked Rides", font=("Arial", 20)).pack(pady=10)
+        self.ride_listbox = ctk.CTkTextbox(self, width=350, height=200)
+        self.ride_listbox.pack(pady=10)
+        self.select_button = ctk.CTkButton(self, text="Select Ride", command=self.select_ride)
+        self.select_button.pack(pady=5)
+
+        btn_row = ctk.CTkFrame(self, fg_color=BACKGROUND_COLOR)
+        btn_row.pack(pady=5)
+        self.accept_button = ctk.CTkButton(
+            btn_row, text="Accept Ride", command=self.accept_ride, state="disabled")
+        self.accept_button.grid(row=0, column=0, padx=10)
+        self.remove_button = ctk.CTkButton(
+            btn_row, text="Remove Ride", command=self.remove_ride, state="disabled")
+        self.remove_button.grid(row=0, column=1, padx=10)
+
+        self.refresh_button = ctk.CTkButton(self, text="Refresh List", command=self.load_bookings)
+        self.refresh_button.pack(pady=5)
+        self.logout_button = ctk.CTkButton(self, text="Log Out", command=self.show_start_screen)
+        self.logout_button.pack(pady=20)
+        self.selected_ride_index = None
+        self.load_bookings()
+
+    def select_ride(self):
+        index_prompt = ctk.CTkInputDialog(text="Enter ride number to select:", title="Select Ride")
+        index_str = index_prompt.get_input()
+        if index_str and index_str.isdigit():
+            index = int(index_str)
+            if 0 <= index < len(self.bookings):
+                self.selected_ride_index = index
+                self.accept_button.configure(state="normal")
+                self.remove_button.configure(state="normal")
+                messagebox.showinfo("Ride Selected", f"Ride #{index} selected.")
+            else:
+                messagebox.showerror("Invalid", "Invalid ride index!")
+
+    def remove_ride(self):
+        if self.selected_ride_index is not None:
+            ride_to_remove = self.bookings[self.selected_ride_index]
+            with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
+                rows = list(csv.DictReader(file))
+            new_rows = [row for row in rows if not (
+                row.get("Name") == ride_to_remove.get("Name") and
+                row.get("Pickup") == ride_to_remove.get("Pickup") and
+                row.get("Dropoff") == ride_to_remove.get("Dropoff") and
+                row.get("Time") == ride_to_remove.get("Time")
+            )]
+            fieldnames = rows[0].keys() if rows else ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
+            with open(BOOKINGS_FILE, "w", newline="", encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(new_rows)
+            messagebox.showinfo("Removed", "Ride removed!")
             self.selected_ride_index = None
+            self.accept_button.configure(state="disabled")
+            self.remove_button.configure(state="disabled")
             self.load_bookings()
 
     def load_bookings(self):
@@ -453,18 +515,6 @@ class DuckDashApp(ctk.CTk):
             if not self.bookings:
                 self.ride_listbox.insert("0.0", "No bookings available.")
 
-    def select_ride(self):
-            index_prompt = ctk.CTkInputDialog(text="Enter ride number to select:", title="Select Ride")
-            index_str = index_prompt.get_input()
-            if index_str and index_str.isdigit():
-                index = int(index_str)
-                if 0 <= index < len(self.bookings):
-                    self.selected_ride_index = index
-                    self.accept_button.configure(state="normal")
-                    messagebox.showinfo("Ride Selected", f"Ride #{index} selected.")
-                else:
-                    messagebox.showerror("Invalid", "Invalid ride index!")
-
     def accept_ride(self):
             if self.selected_ride_index is not None:
                 with open(BOOKINGS_FILE, newline="", encoding="utf-8") as file:
@@ -489,28 +539,27 @@ class DuckDashApp(ctk.CTk):
                 
 
     def create_login_screen(self):
-            self.clear_window()
-            header_frame = ctk.CTkFrame(self, fg_color=HEADER_COLOR)
-            header_frame.pack(fill="x")
+        self.clear_window()
+        content_frame = ctk.CTkFrame(self, fg_color="transparent")
+        content_frame.pack(fill="both", expand=True)
 
-            ctk.CTkLabel(
-                header_frame,
-                text="Duck Dash",
-                font=("Courier", 28, "bold"),
-                text_color=PRIMARY_COLOR,
-                fg_color=HEADER_COLOR
-            ).pack(pady=40, padx=30, anchor="w")
+        header_frame = ctk.CTkFrame(content_frame, fg_color=HEADER_COLOR)
+        header_frame.pack(fill="x")
 
-            ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
+        ctk.CTkLabel(
+            header_frame,
+            text="Duck Dash",
+            font=("Courier", 28, "bold"),
+            text_color=PRIMARY_COLOR,
+            fg_color=HEADER_COLOR
+        ).pack(pady=40, padx=30, anchor="w")
 
+        ctk.CTkLabel(content_frame, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
-#==================================================================================================================================================================
+        ctk.CTkButton(content_frame, text="   Login as Passenger   ", font=("Arial", 18), command=self.passenger_login).pack(pady=(20,10))
+        ctk.CTkButton(content_frame, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
+        ctk.CTkButton(content_frame, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
 
-            ctk.CTkButton(self, text="   Login as Passenger   ",font=("Arial", 18), command=self.passenger_login).pack(pady=(20,10))
-            ctk.CTkButton(self, text="      Login as Driver      ", font=("Arial", 18), command=self.driver_login).pack(pady=(20,10))
-
-            ctk.CTkButton(self, text="Back", command=self.show_start_screen).pack(pady=(150, 30))
-        
     def create_register_screen(self):             # Reusable Code
             self.clear_window()
             ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
@@ -547,6 +596,8 @@ Fast as Duck, Quack! Quack! Quack!"""
         ctk.CTkButton(self, text="Login", command=self.verify_login_passenger).pack(pady=10)
         ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
 
+        self.add_footer_image()
+
 # ====== Login as Driver ======  
 
     def driver_login(self):
@@ -572,6 +623,8 @@ Fast as Duck, Quack! Quack! Quack!"""
 
         ctk.CTkButton(self, text="Login", command=self.verify_login_driver).pack(pady=10)
         ctk.CTkButton(self, text="Back", command=self.create_login_screen).pack(pady=10)
+
+        self.add_footer_image()
 
 # ====== Register as Passenger ======
 
