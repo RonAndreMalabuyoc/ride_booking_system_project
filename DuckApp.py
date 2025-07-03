@@ -15,6 +15,10 @@ ctk.set_default_color_theme("green")
 
 PRIMARY_COLOR = '#fce7a2'
 TEXT_COLOR = '#5c3d00'
+
+# Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
+# Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
+
 IMAGE_PATH = path.join(path.dirname(__file__), "Banana_duck_logo_transparent.png")
 DUCK_INTRO_PATH = path.join(path.dirname(__file__), "Duck_app_Intro.wav")
 USERS_PATH = path.join(path.dirname(__file__), "users.csv")
