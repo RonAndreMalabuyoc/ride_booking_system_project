@@ -70,7 +70,7 @@ class DuckDashApp(ctk.CTk):
         pygame.mixer.music.play()  # loop to keep playing during fade
 
         self.clear_window()
-        image = Image.open(r"C:\Users\JD Angelo G. Soon\Downloads\Banana_duck_logo_transparent.png")
+        image = Image.open(r"Banana_duck_logo_transparent.png")
         ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(300, 300))
         self.logo_photo = ImageTk.PhotoImage(image)
 
