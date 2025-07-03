@@ -20,6 +20,7 @@ DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 USERS_PATH = os.path.join(os.path.dirname(__file__), "users.csv")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
 DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
+BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
 
 # Base Classes
 class User:
@@ -146,27 +147,140 @@ Fast as Duck, Quack! Quack! Quack!"""
         self.attributes("-alpha", 1.0)
         self.show_dashboard()
 
-    #DASHBOARDDD
-    def show_dashboard(self):
-        """A blank page you can customise later."""
-        self.clear_window()
 
-        ctk.CTkLabel(
+
+
+#===================================================================================================================================================================
+
+
+
+
+
+    #MAP BOOKING
+    def show_dashboard(self):
+        self.clear_window()
+        ctk.CTkLabel(self, text="Welcome to Duck Dash!", font=("Courier", 24, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+
+        # Load the image for the booking button
+        book_img = Image.open(IMAGE_PATH)
+        book_ctk_img = ctk.CTkImage(light_image=book_img, dark_image=book_img, size=(30, 30))
+
+        # Book a Ride button with image
+        ctk.CTkButton(
             self,
-            text="Dashboard",
-            font=("Courier", 28, "bold"),
-            text_color=TEXT_COLOR
-        ).pack(pady=40)
+            text=" Book a Ride",
+            image=book_ctk_img,
+            compound="left",
+            font=("Arial", 18),
+            command=self.show_booking_screen  # This should point to your booking logic
+        ).pack(pady=15)
+
+    def show_booking_screen(self):
+        self.clear_window()
+        ctk.CTkLabel(self, text="Book a Ride", font=("Arial", 22, "bold"), text_color=TEXT_COLOR).pack(pady=20)
+
+        ctk.CTkLabel(self, text="Pickup Location", text_color=TEXT_COLOR).pack()
+        self.pickup_entry = ctk.CTkEntry(self, width=300)
+        self.pickup_entry.pack(pady=5)
+
+        ctk.CTkLabel(self, text="Dropoff Location", text_color=TEXT_COLOR).pack()
+        self.dropoff_entry = ctk.CTkEntry(self, width=300)
+        self.dropoff_entry.pack(pady=5)
+
+        ctk.CTkLabel(self, text="Vehicle", text_color=TEXT_COLOR).pack(pady=5)
+        self.selected_vehicle = ctk.StringVar(value=self.available_vehicles()[0])
+        ctk.CTkOptionMenu(self, variable=self.selected_vehicle, values=self.available_vehicles()).pack(pady=5)
+
+        ctk.CTkLabel(self, text="Seat Count", text_color=TEXT_COLOR).pack()
+        self.seat_entry = ctk.CTkEntry(self, width=100)
+        self.seat_entry.pack(pady=5)
+
+        ctk.CTkButton(self, text="Calculate Fare & Show Map", command=self.process_booking).pack(pady=15)
+        ctk.CTkButton(self, text="Back to Dashboard", command=self.show_dashboard).pack()
+
+    def available_vehicles(self):
+        return ["Car", "Van", "Motorcycle"]
+
+    def available_seats(self):
+        return {"Car": [4, 5, 6], "Van": [6, 8, 10, 15, 20], "Motorcycle": [1]}
+
+    def total_fare(self, vehicle, distance_km):
+        rates = {"Car": 45, "Van": 60, "Motorcycle": 30}
+        return rates.get(vehicle, 0) * distance_km
+
+    def process_booking(self):
+        pickup = self.pickup_entry.get().strip()
+        dropoff = self.dropoff_entry.get().strip()
+        vehicle = self.selected_vehicle.get()
+        try:
+            seat_count = int(self.seat_entry.get().strip())
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Seat count must be a number.")
+            return
+
+        if not pickup or not dropoff:
+            messagebox.showerror("Missing Info", "Pickup and dropoff cannot be empty.")
+            return
+
+        if seat_count not in self.available_seats()[vehicle]:
+            messagebox.showerror("Seat Error", f"{vehicle}s cannot have {seat_count} seats.")
+            return
+
+        geolocator = Nominatim(user_agent="duckdash_app")
+        pickup_loc = geolocator.geocode(pickup)
+        dropoff_loc = geolocator.geocode(dropoff)
+
+        if not pickup_loc or not dropoff_loc:
+            messagebox.showerror("Location Error", "Invalid pickup or dropoff address.")
+            return
+
+        pickup_coords = (pickup_loc.latitude, pickup_loc.longitude)
+        dropoff_coords = (dropoff_loc.latitude, dropoff_loc.longitude)
+        distance_km = geodesic(pickup_coords, dropoff_coords).kilometers
+        fare = self.total_fare(vehicle, distance_km)
+
+        # Show Booking Summary
+        summary = f"""
+        ✨ Booking Summary ✨
+        Vehicle: {vehicle}
+        Seats: {seat_count}
+        From: {pickup}
+        To: {dropoff}
+        Distance: {distance_km:.2f} km
+        Fare: ₱{fare:.2f}
+        """
+        messagebox.showinfo("Ride Summary", summary.strip())
+
+        # Show route map
+        map_window = tk.Toplevel(self)
+        map_window.title("Route Map")
+        map_widget = TkinterMapView(map_window, width=800, height=600, corner_radius=0)
+        map_widget.pack(fill="both", expand=True)
+        map_widget.set_position(*pickup_coords)
+        map_widget.set_zoom(12)
+        map_widget.set_marker(*pickup_coords, text="Pickup")
+        map_widget.set_marker(*dropoff_coords, text="Dropoff")
+        map_widget.set_path([pickup_coords, dropoff_coords])
+
+
+
+
+#==================================================================================================================================================================
+
+
+
+
 
     def create_home_screen(self):
-        self.clear_window()
-        ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
-        ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
+            self.clear_window()
+            ctk.CTkLabel(self, text="Welcome to Duck Dash", font=("Courier", 28, "bold"), text_color=TEXT_COLOR).pack(pady=40)
+            ctk.CTkLabel(self, text="Select your mode:", font=("Arial", 18)).pack(pady=10)
 
-        ctk.CTkButton(self, text="   Register as Passenger   ",font=("Arial", 18), command=self.passenger_registration).pack(pady=(20,10))
-        ctk.CTkButton(self, text="      Register as Driver      ", font=("Arial", 18), command=self.driver_registration).pack(pady=(20,10))
+            ctk.CTkButton(self, text="   Register as Passenger   ",font=("Arial", 18), command=self.passenger_registration).pack(pady=(20,10))
+            ctk.CTkButton(self, text="      Register as Driver      ", font=("Arial", 18), command=self.driver_registration).pack(pady=(20,10))
 
-        ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
+            ctk.CTkButton(self, text="Back", command=self.show_login_screen).pack(pady=(150, 30))
+
 
     def passenger_registration(self):
         self.clear_window()
@@ -297,8 +411,7 @@ Fast as Duck, Quack! Quack! Quack!"""
         contact_label = ctk.CTkLabel(form_frame, text="Password *", text_color=TEXT_COLOR)
         contact_label.grid(row=12, column=0, columnspan=2, sticky="w", padx=5)
         self.driver_data["Password"] = ctk.CTkEntry(form_frame, width=320)
-        self.driver_data["Password"].grid(row=15, column=0, columnspan=2, padx=5, pady=5)
-        self.driver_data["Password"] = create_entry("Password *", 11, 0)
+        self.driver_data["Password"].grid(row=14, column=0, columnspan=2, padx=1, pady=5)
 
         button_frame = ctk.CTkFrame(scrollable_frame2)
         button_frame.pack(fill="x", padx=10, pady=10)
