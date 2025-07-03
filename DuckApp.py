@@ -20,7 +20,11 @@ DUCK_INTRO_PATH = os.path.join(os.path.dirname(__file__), "Duck_app_Intro.wav")
 PASSENGERS_PATH = os.path.join(os.path.dirname(__file__), "passenger.csv")
 DRIVERS_PATH = os.path.join(os.path.dirname(__file__), "drivers.csv")
 BOOK_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "book_button.png")
+<<<<<<< HEAD
 BOOKINGS_FILE = "bookings.csv"
+=======
+BOOKINGS_FILE = os.path.join(os.path.dirname(__file__), "bookings.csv")
+>>>>>>> 1c9205670be8a2242f4138583431396105256aac
 
 # Files (.png, .wav, .csv) should now need to be in the same folder as DuckApp.py
 # Running the program again will create new .csv files since old ones are in C:\Users\<Name of Computer>
@@ -303,6 +307,27 @@ Fast as Duck, Quack! Quack! Quack!"""
         Thank you for booking with Duck Dash!
         """
         messagebox.showinfo("Ride Confirmed", details.strip())
+        # Save booking as a row with all required fields for driver dashboard
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        booking_row = {
+            "Name": "Passenger",  # You can replace with actual passenger name if available
+            "Pickup": pickup,
+            "Dropoff": dropoff,
+            "Time": now,
+            "Status": "Pending",
+            "Vehicle": vehicle,
+            "Seat": seat,
+            "Distance": f"{distance_km:.2f}",
+            "Fare": f"{fare:.2f}"
+        }
+        file_exists = os.path.exists(BOOKINGS_FILE)
+        with open(BOOKINGS_FILE, "a", newline='', encoding="utf-8") as file:
+            fieldnames = ["Name", "Pickup", "Dropoff", "Time", "Status", "Vehicle", "Seat", "Distance", "Fare"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            if not file_exists or os.stat(BOOKINGS_FILE).st_size == 0:
+                writer.writeheader()
+            writer.writerow(booking_row)
 
 # ====== DRIVER DASHBOARD ======
     def create_driver_dashboard(self):
